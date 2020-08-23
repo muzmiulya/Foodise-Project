@@ -67,6 +67,10 @@
   border: none;
 }
 
+.addButton button {
+  background-color: transparent;
+  border: none;
+}
 .homeSide button img {
   max-width: 100%;
   width: 50px;
