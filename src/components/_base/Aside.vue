@@ -81,7 +81,6 @@
           </div>
         </div>
       </div>
-
       <div class="gridbox2">
         <div class="totalP">
           <div class="total">Total:</div>
@@ -95,14 +94,10 @@
             class="btn-primary"
             data-toggle="modal"
             data-target="#modalcheckout"
-          >
-            Checkout
-          </button>
+          >Checkout</button>
         </div>
         <div class="cancelbutton">
-          <button type="button" class="btn-secondary">
-            Cancel
-          </button>
+          <button type="button" class="btn-secondary">Cancel</button>
         </div>
       </div>
     </div>

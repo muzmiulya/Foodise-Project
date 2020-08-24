@@ -5,40 +5,18 @@
     <b-container>
       <b-alert v-bind:show="alert">{{ isMsg }}</b-alert>
       <form v-on:submit.prevent="addProduct">
-        <input
-          type="text"
-          v-model="form.product_name"
-          placeholder="Poduct Name"
-        />
+        <input type="text" v-model="form.product_name" placeholder="Poduct Name" />
         <br />
-        <input
-          type="text"
-          v-model="form.product_price"
-          placeholder="Poduct Price"
-        />
+        <input type="text" v-model="form.product_price" placeholder="Poduct Price" />
         <br />
-        <input
-          type="text"
-          v-model="form.product_picture"
-          placeholder="Poduct Price"
-        />
+        <input type="text" v-model="form.product_picture" placeholder="Poduct Price" />
         <br />
-        <input
-          type="text"
-          v-model="form.category_id"
-          placeholder="Category Id"
-        />
+        <input type="text" v-model="form.category_id" placeholder="Category Id" />
         <br />
-        <input
-          type="text"
-          v-model="form.product_status"
-          placeholder="Poduct Status"
-        />
+        <input type="text" v-model="form.product_status" placeholder="Poduct Status" />
         <br />
         <button type="submit" v-show="!isUpdate">Save</button>
-        <button type="button" v-show="isUpdate" @click="patchProduct()">
-          Update
-        </button>
+        <button type="button" v-show="isUpdate" @click="patchProduct()">Update</button>
       </form>
     </b-container>
     <hr />
@@ -55,18 +33,10 @@
             style="max-width: 20rem;"
             class="mb-2"
           >
-            <b-card-text>
-              {{ item.product_price }}
-            </b-card-text>
-            <b-button variant="primary" @click="addToCart(item)"
-              >Add to Cart</b-button
-            >
-            <b-button variant="success" @click="setProduct(item)"
-              >Update</b-button
-            >
-            <b-button variant="danger" @click="deleteProduct(item)"
-              >Delete</b-button
-            >
+            <b-card-text>{{ item.product_price }}</b-card-text>
+            <b-button variant="primary" @click="addToCart(item)">Add to Cart</b-button>
+            <b-button variant="success" @click="setProduct(item)">Update</b-button>
+            <b-button variant="danger" @click="deleteProduct(item)">Delete</b-button>
           </b-card>
         </b-col>
       </b-row>
@@ -91,7 +61,7 @@ export default {
       count: 0,
       cart: [],
       page: 1,
-      limit: 4,
+      limit: 20,
       sort: '',
       products: [],
       form: {
@@ -128,11 +98,11 @@ export default {
         .get(
           `http://127.0.0.1:3001/product?page=${this.page}&limit=${this.limit}`
         )
-        .then(response => {
+        .then((response) => {
           this.products = response.data.data
           console.log(this.products)
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error)
         })
     },
@@ -140,12 +110,12 @@ export default {
       console.log(this.form)
       axios
         .post('http://127.0.0.1:3001/product', this.form)
-        .then(response => {
+        .then((response) => {
           console.log(response)
           this.alert = true
           this.isMsg = response.data.msg
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error)
         })
     },
@@ -164,16 +134,16 @@ export default {
       console.log(this.product_id)
       console.log(this.form)
       this.isUpdate = false
-      // axios
-      //   .patch(`http://127.0.0.1:3001/product/${id}`, this.form)
-      //   .then(response => {
-      //     console.log(response)
-      //     this.alert = true
-      //     this.isMsg = response.data.msg
-      //   })
-      //   .catch(error => {
-      //     console.log(error)
-      //   })
+      axios
+        .patch(`http://127.0.0.1:3001/product/${this.product_id}`, this.form)
+        .then((response) => {
+          console.log(response)
+          this.alert = true
+          this.isMsg = response.data.msg
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
     deleteProduct(data) {
       console.log(data.product_id)
