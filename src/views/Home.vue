@@ -12,14 +12,16 @@
                 <h2 v-show="!isSearch">Food Items</h2>
                 <b-container v-show="isSearch">
                   <b-row>
+                    <form></form>
                     <b-col xl="12">
-                      <input
+                      <b-form-input
                         type="search"
                         v-model="search"
+                        v-show="isSearch"
                         placeholder="Search Product"
                         v-on:change="search_product()"
                         class="searchProduct"
-                      />
+                      ></b-form-input>
                     </b-col>
                   </b-row>
                 </b-container>
@@ -28,7 +30,7 @@
 
             <b-col class="searchButton" xl lg md sm>
               <div>
-                <b-button type="button" class="buttonSearch" @click="isSearch = !isSearch">
+                <b-button type="reset" class="buttonSearch" @click="isSearch = !isSearch">
                   <img alt="Vue search" src="../assets/2.png" />
                 </b-button>
               </div>
@@ -44,39 +46,81 @@
         <Navbar />
         <b-col class="gridbackground" md="7">
           <div class="main">
-            <hr />
             <b-container>
               <b-row>
-                <b-col xl="4">
-                  <div>
-                    <b-col cols="12" class="my-1">
-                      <b-form-group
-                        label="Sort"
-                        label-cols-sm="3"
-                        label-align-sm="right"
-                        label-size="sm"
-                        label-for="sortBySelect"
-                        class="mb-0"
-                      >
-                        <b-input-group size="sm">
-                          <b-form-select
-                            v-model="sort"
-                            id="sortBySelect"
-                            class="w-75"
-                            @change="get_product()"
-                          >
-                            <template v-slot:first>
-                              <option value>-- none --</option>
-                              <option value="product_name">Name</option>
-                              <option value="category_id">Category</option>
-                              <option value="product_price">Price</option>
-                              <option value="product_updated_at DESC">New</option>
-                            </template>
-                          </b-form-select>
-                        </b-input-group>
-                      </b-form-group>
-                    </b-col>
-                  </div>
+                <b-col xl="4" class="my-1">
+                  <b-form-group
+                    label="Sort"
+                    label-cols-sm="6"
+                    label-cols-md="4"
+                    label-cols-lg="3"
+                    label-align-sm="right"
+                    label-size="sm"
+                    label-for="sortBySelect"
+                    class="mb-0"
+                  >
+                    <b-form-select
+                      v-model="sort"
+                      id="sortBySelect"
+                      size="sm"
+                      @change="get_product()"
+                    >
+                      <option value>-- none --</option>
+                      <option value="product_name">Name</option>
+                      <option value="category_id">Category</option>
+                      <option value="product_price">Price</option>
+                      <option value="product_updated_at DESC">New</option>
+                    </b-form-select>
+                  </b-form-group>
+                </b-col>
+                <b-col xl="4" class="my-1">
+                  <b-form-group
+                    label="Limit"
+                    label-cols-sm="6"
+                    label-cols-md="4"
+                    label-cols-lg="3"
+                    label-align-sm="right"
+                    label-size="sm"
+                    label-for="perPageSelect"
+                    class="mb-0"
+                  >
+                    <b-form-select
+                      v-model="limit"
+                      id="perPageSelect"
+                      size="sm"
+                      @change="get_product()"
+                    >
+                      <option value>none</option>
+                      <option value="3">3</option>
+                      <option value="6">6</option>
+                      <option value="9">9</option>
+                    </b-form-select>
+                  </b-form-group>
+                </b-col>
+                <b-col xl="4" class="my-1">
+                  <b-pagination-nav v-model="page" :pages="pages1" @change="get_product()"></b-pagination-nav>
+
+                  <!-- <b-form-group
+                    label="Page"
+                    label-cols-sm="6"
+                    label-cols-md="4"
+                    label-cols-lg="3"
+                    label-align-sm="right"
+                    label-size="sm"
+                    label-for="perPageSelect"
+                    class="mb-0"
+                  >
+                    <b-form-select
+                      v-model="page"
+                      id="perPageSelect"
+                      size="sm"
+                      @change="get_product()"
+                    >
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                    </b-form-select>
+                  </b-form-group>-->
                 </b-col>
               </b-row>
             </b-container>
@@ -92,48 +136,135 @@
                 <b-container>
                   <b-alert v-bind:show="alert">{{ isMsg }}</b-alert>
                   <form class="formAdd" v-on:submit.prevent="addProduct">
-                    <input type="text" v-model="form.category_id" placeholder="Category Id" />
                     <br />
-                    <input type="text" v-model="form.product_name" placeholder="Poduct Name" />
+                    <b-form-input type="text" v-model="form.product_name" placeholder="Poduct Name"></b-form-input>
                     <br />
-                    <input type="text" v-model="form.product_price" placeholder="Poduct Price" />
+                    <b-form-input
+                      type="number"
+                      v-model="form.product_price"
+                      placeholder="Poduct Price"
+                    ></b-form-input>
                     <br />
-                    <input type="text" v-model="form.product_picture" placeholder="Poduct Picture" />
+                    <b-form-input
+                      type="text"
+                      v-model="form.product_picture"
+                      placeholder="Poduct Picture"
+                    ></b-form-input>
                     <br />
-                    <input type="text" v-model="form.product_status" placeholder="Poduct Status" />
+                    <b-form-input
+                      type="number"
+                      v-model="form.product_status"
+                      placeholder="Poduct Status"
+                    ></b-form-input>
                     <br />
+                    <b-form-select v-model="form.category_id" size="sm">
+                      <option disabled value selected>Category</option>
+                      <option value="1">Food</option>
+                      <option value="2">Drink</option>
+                    </b-form-select>
                     <button type="button" @click="patchProduct()">Update</button>
                   </form>
                 </b-container>
               </b-modal>
               <b-row>
-                <b-col cols="4" v-for="(item, index) in products" :key="index">
+                <b-col class="cards" cols="4" v-for="(item, index) in products" :key="index">
                   <b-card
-                    v-bind:title="item.product_name"
                     v-bind:img-src="require('../assets/7.jpg')"
                     img-alt="Image"
                     img-top
                     tag="article"
-                    style="max-width: 20rem;"
                     class="mb-2"
+                    no-body
+                    style="background-color:transparent; border: none; border-radius: 10px 10px"
                   >
-                    <b-card-text>{{ item.product_price }}</b-card-text>
-                    <b-button
-                      variant="primary"
-                      @click="addToCart(item), incrementCount()"
-                      style="width:100%"
-                    >Add to Cart</b-button>
-                    <b-button
-                      variant="success"
-                      style="width:100%"
-                      v-b-modal.modal-update
-                      @click="setProduct(item)"
-                    >Update</b-button>
-                    <b-button
-                      variant="danger"
-                      @click="deleteProduct(item)"
-                      style="width:100%"
-                    >Delete</b-button>
+                    <b-card-body style="padding:0;">
+                      <div v-if="checkCart(item)" class="select-image">
+                        <img class="icon-select" alt="Vue tick" src="../assets/tick2.png" />
+                      </div>
+                      <b-card-title style="margin-bottom: 0">{{ item.product_name }}</b-card-title>
+                      <b-card-text>{{ item.product_price }}</b-card-text>
+                      <b-button
+                        v-show="isHiding"
+                        variant="primary"
+                        @click="addToCart(item), incrementCount()"
+                        style="width:33%"
+                      >
+                        <svg
+                          width="1em"
+                          height="1em"
+                          viewBox="0 0 16 16"
+                          class="bi bi-cart-plus"
+                          fill="currentColor"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M8.5 5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1H8V5.5a.5.5 0 0 1 .5-.5z"
+                          />
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 7.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1H9v1.5a.5.5 0 0 1-1 0v-2z"
+                          />
+                          <path
+                            fill-rule="evenodd"
+                            d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"
+                          />
+                        </svg>
+                      </b-button>
+                      <b-button v-show="isCancelled" variant="danger" style="width:33%">Cancel</b-button>
+                      <b-button
+                        v-show="isHiding"
+                        variant="success"
+                        style="width:33%"
+                        v-b-modal.modal-update
+                        @click="setProduct(item)"
+                      >
+                        <svg
+                          width="1em"
+                          height="1em"
+                          viewBox="0 0 16 16"
+                          class="bi bi-patch-plus"
+                          fill="currentColor"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M10.273 2.513l-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911l-1.318.016z"
+                          />
+                          <path
+                            fill-rule="evenodd"
+                            d="M8 5.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z"
+                          />
+                          <path
+                            fill-rule="evenodd"
+                            d="M7.5 8a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8z"
+                          />
+                        </svg>
+                      </b-button>
+                      <b-button
+                        v-show="isHiding"
+                        variant="danger"
+                        @click="deleteProduct(item)"
+                        style="width:33%"
+                      >
+                        <svg
+                          width="1em"
+                          height="1em"
+                          viewBox="0 0 16 16"
+                          class="bi bi-trash"
+                          fill="currentColor"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"
+                          />
+                          <path
+                            fill-rule="evenodd"
+                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                          />
+                        </svg>
+                      </b-button>
+                    </b-card-body>
                   </b-card>
                 </b-col>
               </b-row>
@@ -156,17 +287,17 @@
                   </div>
                 </div>
                 <div class="item-d">
-                  <button type="button">
-                    <img alt="Vue pictures" src="../assets/minus.png" @click="decrementQty(data)" />
-                  </button>
+                  <b-button type="button" :disabled="item.qty === 1" @click="decrementQty(item)">
+                    <img alt="Vue pictures" src="../assets/minus.png" />
+                  </b-button>
                 </div>
                 <div class="item-e">
                   <h5>{{item.qty}}</h5>
                 </div>
                 <div class="item-f">
-                  <button type="button">
-                    <img alt="Vue pictures" src="../assets/plus.png" @click="incrementQty(data)" />
-                  </button>
+                  <b-button type="button" @click="incrementQty(item)">
+                    <img alt="Vue pictures" src="../assets/plus.png" />
+                  </b-button>
                 </div>
               </div>
             </div>
@@ -206,7 +337,6 @@
 <script>
 import axios from 'axios'
 import Navbar from '../components/_base/Navbar'
-// import Aside from '../components/_base/Aside'
 export default {
   name: 'Home',
   data() {
@@ -216,7 +346,9 @@ export default {
       page: 1,
       limit: 9,
       sort: '',
+      totalRows: 1,
       search: null,
+      disabled: true,
       pageOptions: [3, 6, 9],
       form: {
         category_id: '',
@@ -225,10 +357,18 @@ export default {
         product_picture: '',
         product_status: ''
       },
+      pages1: [
+        { text: '1', value: '1' },
+        { text: '2', value: '2' },
+        { text: '3', value: '3' }
+      ],
       alert: false,
       isMsg: '',
       isUpdate: false,
       isSearch: false,
+      isCheck: false,
+      isCancelled: false,
+      isHiding: true,
       product_id: '',
       products: []
     }
@@ -236,23 +376,22 @@ export default {
 
   components: {
     Navbar
-    // Aside
   },
   created() {
     this.get_product()
   },
   watch: {
-    search: function () {
-      console.log(this.search)
-    },
-    count: function () {
-      console.log(this.count)
-    },
     cart: function () {
       console.log(this.cart)
+    },
+    page: function () {
+      console.log(this.page)
     }
   },
   methods: {
+    checkCart(data) {
+      return this.cart.some((item) => item.product_id === data.product_id)
+    },
     incrementCount() {
       this.count += 1
     },

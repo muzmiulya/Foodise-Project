@@ -28,21 +28,48 @@
             <b-container>
               <b-alert v-bind:show="alert">{{ isMsg }}</b-alert>
               <form class="formAdd" v-on:submit.prevent="addProduct">
-                <input type="text" v-model="form.product_name" placeholder="Poduct Name" />
+                <b-form-input
+                  id="inputN"
+                  type="text"
+                  v-model="form.product_name"
+                  placeholder="Poduct Name"
+                ></b-form-input>
                 <br />
-                <input type="text" v-model="form.product_price" placeholder="Poduct Price" />
+
+                <b-form-input
+                  id="inputPr"
+                  type="number"
+                  v-model="form.product_price"
+                  placeholder="Poduct Price"
+                ></b-form-input>
                 <br />
-                <input type="text" v-model="form.product_picture" placeholder="Poduct Picture" />
+
+                <b-form-input
+                  id="inputPi"
+                  type="text"
+                  v-model="form.product_picture"
+                  placeholder="Poduct Picture"
+                ></b-form-input>
                 <br />
-                <input type="text" v-model="form.product_status" placeholder="Poduct Status" />
+
+                <b-form-input
+                  id="inputS"
+                  type="number"
+                  v-model="form.product_status"
+                  placeholder="Poduct Status"
+                ></b-form-input>
                 <br />
-                <select v-model="form.category_id">
-                  <option value>Category</option>
+                <b-form-select
+                  v-model="form.category_id"
+                  id="inputC"
+                  size="sm"
+                  placeholder="Category"
+                >
+                  <option disabled value selected>Category</option>
                   <option value="1">Food</option>
                   <option value="2">Drink</option>
-                </select>
-                <button type="submit">Add</button>
-                <!-- <button type="button" v-show="isUpdate" @click="patchProduct()">Update</button> -->
+                </b-form-select>
+                <b-button type="submit">Add</b-button>
               </form>
             </b-container>
           </b-modal>
