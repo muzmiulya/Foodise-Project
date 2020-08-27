@@ -93,21 +93,19 @@
   position: relative;
   z-index: 1;
 }
-
 .homeSide button {
+  max-width: 100%;
+  max-height: 100%;
   align-content: center;
   background-color: transparent;
   border: none;
+  height: 60px;
 }
 
-.addButton button {
-  background-color: transparent;
-  border: none;
-}
 .homeSide button img {
   max-width: 100%;
+  max-height: 100%;
   width: 50px;
-  height: auto;
 }
 
 /* Modal add */
@@ -146,7 +144,10 @@
   width: 100%;
   padding: 20px;
 }
-
+.product-list {
+  overflow: scroll;
+  height: 500px;
+}
 .cards {
   border-radius: 10px 10px;
   border: none;
@@ -192,6 +193,10 @@
   right: 60%;
 }
 
+.sortLimit {
+  display: flex;
+  justify-content: flex-end;
+}
 /* Aside */
 
 .yourcart {
@@ -199,7 +204,7 @@
 }
 .theGrid {
   display: grid;
-  height: 800px;
+  height: 600px;
 }
 .gridbox1 {
   display: grid;
@@ -382,36 +387,66 @@
   .item-b {
     font-size: 15px;
   }
-  .item-c {
+  .item-cPrice p {
     font-size: 15px;
+  }
+  /* Navbar */
+  .homeSide {
+    padding: 0 !important;
   }
 
   /* Aside */
   .orderboxes {
     height: 75px;
+    grid-template-rows: 65% 35%;
+    grid-template-columns: 25% 5% 10% 10% 10% 5%;
+    grid-template-areas:
+      'itema . itemb itemb itemb itemb itemc'
+      'itema . itemd iteme itemf . itemc';
   }
   .item-d button img {
-    padding-bottom: 15px;
+    padding-bottom: 5px;
     width: 20px;
     height: auto;
   }
   .item-e {
     max-width: 100%;
-    height: 100%;
-    font-size: 20px;
-    box-sizing: border-box;
+    height: auto;
+    box-sizing: none;
   }
 
   .item-e h5 {
     font-size: 20px;
   }
   .item-f button img {
-    padding-bottom: 15px;
+    padding-bottom: 5px;
     width: 20px;
     height: auto;
   }
+  /* orderbox */
+  .total {
+    font-size: 15px;
+  }
+  .totalnumber {
+    font-size: 15px;
+  }
+  .ppn {
+    font-size: 13px;
+  }
 }
-
+@media screen and (max-width: 900px) {
+  .orderboxes {
+    height: 70px;
+    grid-template-rows: 65% 35%;
+    grid-template-columns: 30% 5% 10% 10% 10% 5%;
+    grid-template-areas:
+      'itema . itemb itemb itemb itemb itemc'
+      'itema . itemd iteme itemf . itemc';
+  }
+  .item-cPrice p {
+    font-size: 13px;
+  }
+}
 @media screen and (max-width: 768px) {
   .firstColumn {
     box-shadow: none;
@@ -441,12 +476,42 @@
     font-size: 23px;
     font-weight: bold;
   }
+
+  .orderboxes {
+    height: 90px;
+    grid-template-rows: 65% 35%;
+    grid-template-columns: 20% 5% 10% 10% 10% 5%;
+    grid-template-areas:
+      'itema . itemb itemb itemb itemb itemc'
+      'itema . itemd iteme itemf . itemc';
+  }
   .item-b {
     font-size: 20px;
   }
-  .item-c {
+
+  .item-cPrice p {
     font-size: 20px;
   }
+  .item-d button img {
+    padding-bottom: 0px;
+    width: 20px;
+    height: auto;
+  }
+  .item-f button img {
+    padding-bottom: 0px;
+    width: 20px;
+    height: auto;
+  }
+  .total {
+    font-size: 25px;
+  }
+  .totalnumber {
+    font-size: 25px;
+  }
+  .ppn {
+    font-size: 23px;
+  }
+
   /* navbar */
   .sideHome {
     box-shadow: none;
@@ -483,7 +548,14 @@
     padding-top: 10px;
   }
   .foodItems {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-align: center;
+    vertical-align: middle;
+  }
+  .foodItems h2 {
+    font-size: 25px;
   }
   .homeButton {
     text-align: center;
@@ -501,32 +573,70 @@
     padding-top: 5px;
   }
 
-  .searchButton img {
+  .buttonSearch img {
     max-width: 100%;
     width: 35px;
     height: auto;
     text-align: center;
   }
+  .orderboxes {
+    height: 90px;
+    grid-template-rows: 65% 35%;
+    grid-template-columns: 25% 5% 10% 10% 10% 5%;
+    grid-template-areas:
+      'itema . itemb itemb itemb itemb itemc'
+      'itema . itemd iteme itemf . itemc';
+  }
+  .item-b {
+    font-size: 15px;
+  }
+
+  .item-cPrice p {
+    font-size: 20px;
+  }
 }
-
-/* @media screen and (max-width: 450px) {
-  .orderboxes1 img {
-    width: 100%;
-    max-width: 100%;
-    height: 80px;
-
-    padding: 0;
+@media screen and (max-width: 430px) {
+  .orderboxes {
+    height: 90px;
+    grid-template-rows: 65% 35%;
+    grid-template-columns: 30% 5% 10% 10% 10% 5%;
+    grid-template-areas:
+      'itema . itemb itemb itemb itemb itemc'
+      'itema . itemd iteme itemf . itemc';
   }
-  .orderboxes3 .orderprice {
-    font-size: 15px;
-    width: 80px;
-  }
-  .orderboxesamount1 {
+  .item-cPrice p {
     font-size: 15px;
   }
-  .addernumber {
-    font-size: 25px;
-
-    height: auto;
+  .searchButton {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
-}  */
+}
+@media screen and (max-width: 330px) {
+  .orderboxes {
+    height: 90px;
+    grid-template-rows: 65% 35%;
+    grid-template-columns: 35% 3% 10% 10% 10% 3%;
+    grid-template-areas:
+      'itema . itemb itemb itemb itemb itemc'
+      'itema . itemd iteme itemf . itemc';
+  }
+  .foodItems h2 {
+    font-size: 20px;
+  }
+  .item-cPrice p {
+    font-size: 13px;
+  }
+  .total {
+    font-size: 20px;
+  }
+  .totalnumber {
+    font-size: 20px;
+  }
+  .ppn {
+    font-size: 17px;
+  }
+  .cardTitlePrice {
+    font-size: 15px;
+  }
+}

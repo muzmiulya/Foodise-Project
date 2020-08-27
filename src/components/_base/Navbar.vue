@@ -1,7 +1,7 @@
 <template>
-  <b-col class="sideHome" md="1">
+  <b-col class="sideHome" xl="1" lg="1" md="1">
     <b-row>
-      <b-col class="forkSpoon homeSide" md>
+      <b-col class="forkSpoon homeSide" xl="12">
         <router-link to="/" vslot="{ route, navigate}">
           <b-button class="forkSpoonButton">
             <img alt="Vue forkSpoon" src="../../assets/3.png" />
@@ -10,7 +10,7 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col class="history homeSide" md>
+      <b-col class="history homeSide" xl="12">
         <router-link to="/history" vslot="{ route, navigate}">
           <b-button class="historyButton">
             <img alt="Vue history" src="../../assets/4.png" />
@@ -19,12 +19,18 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col class="addButton homeSide" md>
+      <b-col class="add homeSide" xl="12">
         <div>
-          <b-button v-b-modal.modal-1>
+          <b-button class="addButton" v-b-modal.modal-1>
             <img alt="Vue add" src="../../assets/5.png" />
           </b-button>
-          <b-modal id="modal-1" class="modalAdd" title="Add Item" hide-footer no-close-on-backdrop>
+          <b-modal
+            id="modal-1"
+            class="modalAdd"
+            title="Add Item"
+            hide-footer
+            no-close-on-backdrop
+          >
             <b-container>
               <b-alert v-bind:show="alert">{{ isMsg }}</b-alert>
               <form class="formAdd" v-on:submit.prevent="addProduct">
@@ -69,7 +75,7 @@
                   <option value="1">Food</option>
                   <option value="2">Drink</option>
                 </b-form-select>
-                <b-button type="submit">Add</b-button>
+                <b-button :disabled="isDisabled" type="submit">Add</b-button>
               </form>
             </b-container>
           </b-modal>
@@ -103,8 +109,19 @@ export default {
     }
   },
   watcher: {
-    form: function () {
+    form: function() {
       console.log(this.form)
+    }
+  },
+  computed: {
+    isDisabled() {
+      return (
+        this.form.product_name <= 0 ||
+        this.form.product_price <= 0 ||
+        this.form.product_picture <= 0 ||
+        this.form.product_status <= 0 ||
+        this.form.category_id <= 0
+      )
     }
   },
   methods: {
@@ -112,12 +129,12 @@ export default {
       console.log(this.form)
       axios
         .post('http://127.0.0.1:3001/product', this.form)
-        .then((response) => {
+        .then(response => {
           console.log(response)
           this.alert = true
           this.isMsg = response.data.msg
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error)
         })
     }
