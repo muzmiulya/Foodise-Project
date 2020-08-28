@@ -19,12 +19,12 @@
           <b-container class="grid-container">
             <b-col class="box1">
               <div class="incomeorder">Today's Income</div>
-              <div class="numberamount">Rp. 1.000.000</div>
+              <div class="numberamount">Rp. {{ todayIncome[0].income }}</div>
               <div class="percentage">+2% Yesterday</div>
             </b-col>
             <b-col class="box2">
               <div class="incomeorder">Orders</div>
-              <div class="numberamount">3.270</div>
+              <div class="numberamount">{{ orderCount[0].orders }}</div>
               <div class="percentage">+5% Last Week</div>
             </b-col>
             <b-col class="box3">
@@ -134,12 +134,7 @@
                 </b-form>
               </div>
               <div class="tables">
-                <b-table
-                  class="tableOrder"
-                  striped
-                  hover
-                  :items="items"
-                ></b-table>
+                <b-table class="tableOrder" striped hover :items="perDay"></b-table>
               </div>
             </b-col>
           </b-container>
@@ -150,29 +145,81 @@
 </template>
 
 <script>
+import axios from 'axios'
 import Navbar from '../components/_base/Navbar'
-import Vue from 'vue'
-import Chartkick from 'vue-chartkick'
-import Chart from 'chart.js'
-
-Vue.use(Chartkick.use(Chart))
 export default {
   name: 'History',
   data() {
     return {
-      items: [
-        {
-          INVOICES: '#10928',
-          CASHIER: 'Chasier 1',
-          DATE: '06 October 2019',
-          ORDERS: 'Ice Tea, Salad with Peanut',
-          AMOUNT: 'Rp. 120.000'
-        }
-      ]
+      date: 'date',
+      interval: 0,
+      fields: [
+        { key: 'history_id', label: 'INVOICES' },
+        'CASHIER',
+        'DATE',
+        'ORDERS',
+        'AMOUNT'
+      ],
+      forms: {
+        history_invoices: '',
+        history_created_at: '',
+        history_subtotal: ''
+      },
+      history_id: '',
+      todayIncome: [],
+      orderCount: [],
+      perDay: []
     }
   },
   components: {
     Navbar
+  },
+  watch: {
+    perDay: function () {
+      console.log(this.perDay)
+    }
+  },
+  created() {
+    this.getIncomeToday()
+    this.getOrderCount()
+    this.getHistoryPerDay()
+  },
+  methods: {
+    getHistoryPerDay() {
+      axios
+        .get(
+          `http://127.0.0.1:3001/history/days/days?date=${this.date}&interval=${this.interval}`
+        )
+        .then((response) => {
+          this.perDay = response.data.data
+          // console.log(this.perDay)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    getIncomeToday() {
+      axios
+        .get('http://127.0.0.1:3001/history/income/today')
+        .then((response) => {
+          this.todayIncome = response.data.data
+          // console.log(this.todayIncome)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    getOrderCount() {
+      axios
+        .get('http://127.0.0.1:3001/history/order/count')
+        .then((response) => {
+          this.orderCount = response.data.data
+          // console.log(this.orderCount)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
   }
 }
 </script>

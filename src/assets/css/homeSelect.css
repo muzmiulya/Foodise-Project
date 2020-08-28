@@ -356,6 +356,58 @@
   font-size: 25px;
 }
 
+/* ***************************************** */
+.firstRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 70px;
+}
+.secondRow {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: auto;
+  /* overflow: scroll; */
+}
+.loopProduct {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.secondHalfRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 30px;
+}
+
+.thirdRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.fourthRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  height: 50px;
+}
+.sixthRow h6 {
+  text-align: center;
+}
+.buttonPrint {
+  width: 100%;
+  background-color: blue;
+}
+.buttonSendEmail {
+  width: 100%;
+}
+
+/* --------------------------------------------------------- */
+.Checkouts div {
+  font-weight: bold;
+}
 /* ======================================= */
 
 @media screen and (max-width: 1300px) {

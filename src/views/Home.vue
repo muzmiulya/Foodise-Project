@@ -28,11 +28,7 @@
               </div>
             </b-col>
             <b-col class="searchButton" xl lg="2" md="2" sm="2" cols="3">
-              <b-button
-                class="buttonSearch"
-                type="reset"
-                @click="isSearch = !isSearch"
-              >
+              <b-button class="buttonSearch" type="reset" @click="isSearch = !isSearch">
                 <img alt="Vue search" src="../assets/2.png" />
               </b-button>
             </b-col>
@@ -40,7 +36,11 @@
         </b-col>
         <b-col class="myCart" xl="4" lg="4" md="4" sm="12">
           Cart
-          <span class="badge badge-pill badge-primary">{{ count }}</span>
+          <span class="badge badge-pill badge-primary">
+            {{
+            incrementCount
+            }}
+          </span>
         </b-col>
       </b-row>
       <b-row>
@@ -89,7 +89,7 @@
                       v-model="limit"
                       id="perPageSelect"
                       size="sm"
-                      @change="get_product()"
+                      @change="get_product(), handleSort"
                     >
                       <option value>none</option>
                       <option value="3">3</option>
@@ -142,12 +142,7 @@
                         <option value="1">Food</option>
                         <option value="2">Drink</option>
                       </b-form-select>
-                      <b-button
-                        :disabled="isDisabled"
-                        type="submit"
-                        @click="patchProduct()"
-                        >Update</b-button
-                      >
+                      <b-button :disabled="isDisabled" type="submit" @click="patchProduct()">Update</b-button>
                     </form>
                   </b-container>
                 </b-modal>
@@ -173,26 +168,21 @@
                     >
                       <b-card-body style="padding:0;">
                         <div v-if="checkCart(item)" class="select-image">
-                          <img
-                            class="icon-select"
-                            alt="Vue tick"
-                            src="../assets/tick2.png"
-                          />
+                          <img class="icon-select" alt="Vue tick" src="../assets/tick2.png" />
                         </div>
                         <b-card-title
                           class="cardTitlePrice"
                           style="margin-bottom: 0"
-                          >{{ item.product_name }}</b-card-title
-                        >
-                        <b-card-text class="cardTitlePrice">{{
+                        >{{ item.product_name }}</b-card-title>
+                        <b-card-text class="cardTitlePrice">
+                          {{
                           item.product_price
-                        }}</b-card-text>
+                          }}
+                        </b-card-text>
                         <b-button
                           v-show="isHiding(item)"
                           variant="primary"
-                          @click="
-                            addToCart(item), incrementCount(), isHiding(item)
-                          "
+                          @click="addToCart(item), isHiding(item)"
                           style="width:33%"
                         >
                           <svg
@@ -221,7 +211,7 @@
                           v-show="!isHiding(item)"
                           variant="danger"
                           style="width:33%"
-                          @click="!isHiding(item)"
+                          @click="deleteEvent(item), !isHiding(item)"
                         >
                           <span aria-hidden="true">&times;</span>
                         </b-button>
@@ -301,11 +291,7 @@
         <b-col class="yourcart" md="4">
           <div class="theGrid" v-if="cart.length > 0">
             <div class="gridbox1">
-              <div
-                class="orderboxes"
-                v-for="(item, index) in cart"
-                :key="index"
-              >
+              <div class="orderboxes" v-for="(item, index) in cart" :key="index">
                 <div class="item-a">
                   <img alt="Vue pictures" src="../assets/7.jpg" />
                 </div>
@@ -314,7 +300,7 @@
                 </div>
                 <div class="item-c">
                   <div class="item-cPrice">
-                    <p>{{ item.product_price }}</p>
+                    <p>{{ item.product_price * item.purchase_qty }}</p>
                   </div>
                 </div>
                 <div class="item-d">
@@ -339,18 +325,17 @@
             <div class="gridbox2">
               <div class="totalP">
                 <div class="total">Total:</div>
-                <div class="totalnumber">Rp. 150.000</div>
+                <div class="totalnumber">Rp. {{ computedSum }}</div>
               </div>
-              <div class="ppn">*sudah termasuk ppn</div>
+              <div class="ppn">*belum termasuk ppn</div>
               <div class="checkoutbutton">
                 <b-button
                   block
                   type="button"
                   class="btn-primary"
                   v-b-modal.modal-checkout
-                  @click="postOrder(cart)"
-                  >Checkout</b-button
-                >
+                  @click="postOrder()"
+                >Checkout</b-button>
                 <b-modal
                   id="modal-checkout"
                   class="modalCheck"
@@ -360,26 +345,39 @@
                 >
                   <div class="Checkouts">
                     <div class="firstRow">
-                      <div class="cashier">
-                        Cashier: Pevita Pearce
-                      </div>
-                      <div class="cashier">
-                        Receipt no: #000000000
-                      </div>
+                      <div class="cashier">Cashier: Pevita Pearce</div>
+                      <div class="cashier">Receipt no: #{{ histories.history_invoices }}</div>
                     </div>
                     <div class="secondRow">
-                      <div class="cashier">
-                        Coffee Latte x1
+                      <div class="loopProduct" v-for="(item, index) in cart" :key="index">
+                        <div class="ordered">{{ item.product_name }} x{{ item.purchase_qty }}</div>
+                        <div class="ordered">Rp. {{ item.product_price * item.purchase_qty }}</div>
                       </div>
-                      <div class="cashier">
-                        Rp. 15.000
-                      </div>
+                    </div>
+                    <div class="secondHalfRow">
+                      <div class="ppns">PPn 10%</div>
+                      <div class="ppnPrice">Rp. {{ computedSum * 0.1 }}</div>
+                    </div>
+                    <div class="thirdRow">
+                      <div class="subTotal">Total: Rp. {{ histories.history_subtotal }}</div>
+                    </div>
+                    <div class="fourthRow">
+                      <div class="payment">Payment: Cash</div>
+                    </div>
+                    <div class="fifthRow">
+                      <b-button class="buttonPrint" variant="success">Print</b-button>
+                    </div>
+                    <div class="sixthRow">
+                      <h6>Or</h6>
+                    </div>
+                    <div class="seventhRow">
+                      <b-button class="buttonSendEmail" variant="primary">Send Email</b-button>
                     </div>
                   </div>
                 </b-modal>
               </div>
               <div class="cancelbutton">
-                <b-button type="submit" class="btn-secondary">Cancel</b-button>
+                <b-button type="submit" class="btn-secondary" @click="deleteEventAll()">Cancel</b-button>
               </div>
             </div>
           </div>
@@ -409,7 +407,7 @@ export default {
       limit: 9,
       sort: '',
       totalRows: 1,
-      search: null,
+      search: '',
       disabled: true,
       pageOptions: [3, 6, 9],
       form: {
@@ -419,10 +417,7 @@ export default {
         product_picture: '',
         product_status: ''
       },
-      orders: {
-        product_id: '',
-        purchase_qty: ''
-      },
+      checkout: {},
       pages1: [
         { text: '1', value: '1' },
         { text: '2', value: '2' },
@@ -434,7 +429,9 @@ export default {
       isSearch: false,
       isCheck: false,
       product_id: '',
-      products: []
+      products: [],
+      histories: [],
+      totalSum: []
     }
   },
 
@@ -443,10 +440,14 @@ export default {
   },
   created() {
     this.get_product()
+    this.search_product()
+  },
+  updated() {
+    console.log(this.$route.query)
   },
   watch: {
-    cart: function() {
-      console.log(this.cart)
+    totalSum: function () {
+      console.log(this.totalSum)
     }
   },
   computed: {
@@ -458,40 +459,66 @@ export default {
         this.form.product_status <= 0 ||
         this.form.category_id <= 0
       )
+    },
+    computedSum() {
+      const sums = this.cart.map((value) => {
+        return value.purchase_qty * value.product_price
+      })
+      return sums.reduce((a, b) => a + b)
+    },
+    incrementCount() {
+      return this.cart.length
     }
   },
+
   methods: {
     checkCart(data) {
-      return this.cart.some(item => item.product_id === data.product_id)
+      return this.cart.some((item) => item.product_id === data.product_id)
     },
-    // cancelOrder(data) {
-    //   let cancell = this.cart.some(
-    //     (item) => item.product_id === data.product_id
-    //   )
-    //   return (cancell = '')
-    // },
-    // cancelOrder() {
-    //   cart.length = 0
-    // },
+
     isHiding(data) {
-      if (this.cart.some(item => item.product_id === data.product_id)) {
+      if (this.cart.some((item) => item.product_id === data.product_id)) {
         return false
       } else {
         return true
       }
     },
+    deleteEvent(data) {
+      const indexProduct = this.cart.find(
+        (value) => value.product_id === data.product_id
+      )
+      const indexId = this.cart.indexOf(indexProduct)
+      this.cart.splice(indexId, 1)
+    },
+    deleteEventAll() {
+      this.cart.splice(0, this.cart.length)
+    },
     handlePageChange(event) {
+      this.$router.push(`?page=${event}`)
       this.page = event
       this.get_product()
     },
-    incrementCount() {
-      this.count += 1
+    // handleSearch(event) {
+    //   this.$router.push(`?search=${event}`)
+    //   this.search = event
+    //   this.search_product()
+    // },
+    handleSort(event) {
+      this.$router.push(`?sort=${event}`)
+      this.sort = event
+      this.get_product()
     },
     incrementQty(data) {
-      data.purchase_qty += 1
+      const incrementData = this.cart.find(
+        (value) => value.product_id === data.product_id
+      )
+      incrementData.purchase_qty += 1
     },
     decrementQty(data) {
-      data.purchase_qty -= 1
+      const decrementData = this.cart.find(
+        (value) => value.product_id === data.product_id
+      )
+      decrementData.purchase_qty -= 1
     },
     addToCart(data) {
       const setCart = {
@@ -501,31 +528,31 @@ export default {
         product_price: data.product_price
       }
       this.cart = [...this.cart, setCart]
-      console.log(this.cart)
     },
-    get_product() {
+    get_product(event) {
       axios
         .get(
           `http://127.0.0.1:3001/product?sort=${this.sort}&page=${this.page}&limit=${this.limit}`
         )
-        .then(response => {
+        .then((response) => {
           this.products = response.data.data
           console.log(this.products)
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error)
         })
     },
-    search_product() {
+    search_product(event) {
       axios
         .get(
           `http://127.0.0.1:3001/product/search/name?search=${this.search}&limit=${this.limit}`
         )
-        .then(response => {
+        .then((response) => {
           this.products = response.data.data
+          // this.$router.push(`?search=${event}`)
           console.log(this.products)
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error)
         })
     },
@@ -547,12 +574,12 @@ export default {
       this.isUpdate = false
       axios
         .patch(`http://127.0.0.1:3001/product/${this.product_id}`, this.form)
-        .then(response => {
+        .then((response) => {
           console.log(response)
           this.alert = true
           this.isMsg = response.data.msg
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error)
         })
     },
@@ -560,25 +587,26 @@ export default {
       console.log(data.product_id)
       axios
         .delete(`http://127.0.0.1:3001/product/${data.product_id}`, this.form)
-        .then(response => {
+        .then((response) => {
           console.log(response)
           this.alert = true
           this.isMsg = response.data.msg
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error)
         })
     },
-    postOrder(data) {
-      console.log(data.orders)
+    postOrder() {
+      this.checkout = { orders: this.cart }
       axios
-        .post('http://127.0.0.1:3001/purchase', data.orders)
-        .then(response => {
-          console.log(response)
+        .post('http://127.0.0.1:3001/purchase', this.checkout)
+        .then((response) => {
+          this.histories = response.data.data
           this.alert = true
           this.isMsg = response.data.msg
+          console.log(this.histories)
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error)
         })
     }
