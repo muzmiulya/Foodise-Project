@@ -19,17 +19,17 @@
           <b-container class="grid-container">
             <b-col class="box1">
               <div class="incomeorder">Today's Income</div>
-              <div class="numberamount">Rp. {{ todayIncome[0].income }}</div>
+              <div class="numberamount">Rp. {{ todayIncome.income }}</div>
               <div class="percentage">+2% Yesterday</div>
             </b-col>
             <b-col class="box2">
               <div class="incomeorder">Orders</div>
-              <div class="numberamount" v-if="orderCount">{{ orderCount[0].orders }}</div>
+              <div class="numberamount">{{ orderCount.orders }}</div>
               <div class="percentage">+5% Last Week</div>
             </b-col>
             <b-col class="box3">
               <div class="incomeorder">This Year's Income</div>
-              <div class="numberamount">Rp. {{yearlyIncome[0].yearly}}</div>
+              <div class="numberamount">Rp. {{yearlyIncome.yearly}}</div>
               <div class="percentage">+10% Last Year</div>
             </b-col>
             <b-col class="box4">
@@ -48,78 +48,8 @@
                   width="auto"
                   height="300px"
                   legend="bottom"
-                  :data="[
-                    {
-                      name: 'This Month',
-                      data: {
-                        '1': 0,
-                        '2': 20000,
-                        '3': 11000,
-                        '4': 28000,
-                        '5': 21000,
-                        '6': 39000,
-                        '7': 12000,
-                        '8': 47000,
-                        '9': 40000,
-                        '10': 33000,
-                        '11': 37000,
-                        '12': 24000,
-                        '13': 46000,
-                        '14': 35000,
-                        '15': 39000,
-                        '16': 32000,
-                        '17': 23000,
-                        '18': 39000,
-                        '19': 30000,
-                        '20': 40000,
-                        '21': 32000,
-                        '22': 12000,
-                        '23': 24000,
-                        '24': 46000,
-                        '25': 44000,
-                        '26': 56000,
-                        '27': 31000,
-                        '28': 47000,
-                        '29': 43000,
-                        '30': 39000
-                      }
-                    },
-                    {
-                      name: 'Last Month',
-                      data: {
-                        '1': 10000,
-                        '2': 29000,
-                        '3': 3000,
-                        '4': 37000,
-                        '5': 22000,
-                        '6': 38000,
-                        '7': 12000,
-                        '8': 29000,
-                        '9': 22000,
-                        '10': 46000,
-                        '11': 13000,
-                        '12': 18000,
-                        '13': 12000,
-                        '14': 30000,
-                        '15': 21000,
-                        '16': 32000,
-                        '17': 45000,
-                        '18': 43000,
-                        '19': 37000,
-                        '20': 41000,
-                        '21': 29000,
-                        '22': 31000,
-                        '23': 39000,
-                        '24': 28000,
-                        '25': 17000,
-                        '26': 36000,
-                        '27': 17000,
-                        '28': 32000,
-                        '29': 28000,
-                        '30': 21000
-                      }
-                    }
-                  ]"
+                  label="This Month"
+                  :data="datas"
                 ></line-chart>
               </div>
             </b-col>
@@ -142,7 +72,6 @@
                   :items="perDay"
                   :fields="fields"
                 ></b-table>
-                <b-button @click="todayCome"></b-button>
               </div>
             </b-col>
           </b-container>
@@ -169,6 +98,80 @@ export default {
         { key: 'history_subtotal', label: 'AMOUNT' }
       ],
       items: [],
+      // datas: [
+      //   {
+      //     name: 'This Month',
+      //     data: {
+      //       1: 0,
+      //       2: 20000,
+      //       3: 11000,
+      //       4: 28000,
+      //       5: 21000,
+      //       6: 39000,
+      //       7: 12000,
+      //       8: 47000,
+      //       9: 40000,
+      //       10: 33000,
+      //       11: 37000,
+      //       12: 24000,
+      //       13: 46000,
+      //       14: 35000,
+      //       15: 39000,
+      //       16: 32000,
+      //       17: 23000,
+      //       18: 39000,
+      //       19: 30000,
+      //       20: 40000,
+      //       21: 32000,
+      //       22: 12000,
+      //       23: 24000,
+      //       24: 46000,
+      //       25: 44000,
+      //       26: 56000,
+      //       27: 31000,
+      //       28: 47000,
+      //       29: 43000,
+      //       30: 39000
+      //     }
+      //   },
+      //   {
+      //     name: 'Last Month',
+      //     data: {
+      //       1: 10000,
+      //       2: 29000,
+      //       3: 3000,
+      //       4: 37000,
+      //       5: 22000,
+      //       6: 38000,
+      //       7: 12000,
+      //       8: 29000,
+      //       9: 22000,
+      //       10: 46000,
+      //       11: 13000,
+      //       12: 18000,
+      //       13: 12000,
+      //       14: 30000,
+      //       15: 21000,
+      //       16: 32000,
+      //       17: 45000,
+      //       18: 43000,
+      //       19: 37000,
+      //       20: 41000,
+      //       21: 29000,
+      //       22: 31000,
+      //       23: 39000,
+      //       24: 28000,
+      //       25: 17000,
+      //       26: 36000,
+      //       27: 17000,
+      //       28: 32000,
+      //       29: 28000,
+      //       30: 21000
+      //     }
+      //   }
+      // ],
+
+      datas: {},
       forms: {
         history_invoices: '',
         history_created_at: '',
@@ -181,6 +184,7 @@ export default {
       yearlyIncome: []
     }
   },
+
   components: {
     Navbar
   },
@@ -195,41 +199,16 @@ export default {
     this.getOrderCount()
     this.getHistoryPerDay()
     this.getIncomeYearly()
+    this.getChartMonthly()
   },
-  computed: {
-    ordersCount() {
-      return this.orderCount[0].orders
-    }
-  },
+
   methods: {
-    todayCome() {
-      const come = this.todayIncome[0].income
-      console.log(come)
-    },
-    yearlyCome() {
-      return this.yearlyIncome[0].yearly
-    },
-    // getPerDay() {
-    //   const ordered = this.perDay[0].orders.map((value) => {
-    //     return value.product_name + ' ' + value.purchase_qty
-    //   })
-    //   const orderer = ordered.toString()
-    //   const setData = {
-    //     history_invoices: this.perDay[0].history_invoices,
-    //     cashier: 'Cashier 1',
-    //     history_created_at: this.perDay[0].history_created_at,
-    //     orderer,
-    //     history_subtotal: this.perDay[0].history_subtotal
-    //   }
-    //   this.items.push(setData)
-    //   console.log(this.items)
-    // },
     getHistoryPerDay() {
       axios
         .get('http://127.0.0.1:3001/history/days/days')
         .then((response) => {
           this.perDay.push(response.data.data)
-          console.log(this.perDay)
+          // console.log(this.perDay)
         })
         .catch((error) => {
           console.log(error)
@@ -239,7 +218,7 @@ export default {
       axios
         .get('http://127.0.0.1:3001/history/income/today')
         .then((response) => {
-          this.todayIncome = response.data.data
+          this.todayIncome = response.data.data[0]
           // console.log(this.todayIncome)
         })
         .catch((error) => {
@@ -250,7 +229,7 @@ export default {
       axios
         .get('http://127.0.0.1:3001/history/order/count')
         .then((response) => {
-          this.orderCount = response.data.data
+          this.orderCount = response.data.data[0]
           // console.log(this.orderCount)
         })
         .catch((error) => {
@@ -261,8 +240,19 @@ export default {
       axios
         .get('http://127.0.0.1:3001/history/income/year')
         .then((response) => {
-          this.yearlyIncome = response.data.data
+          this.yearlyIncome = response.data.data[0]
           // console.log(this.todayIncome)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    getChartMonthly() {
+      axios
+        .get('http://127.0.0.1:3001/history/chart/monthly')
+        .then((response) => {
+          this.datas = response.data.data
+          console.log(this.datas)
         })
         .catch((error) => {
           console.log(error)
