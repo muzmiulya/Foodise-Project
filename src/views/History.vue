@@ -24,12 +24,12 @@
             </b-col>
             <b-col class="box2">
               <div class="incomeorder">Orders</div>
-              <div class="numberamount">{{ orderCount[0].orders }}</div>
+              <div class="numberamount" v-if="orderCount">{{ orderCount[0].orders }}</div>
               <div class="percentage">+5% Last Week</div>
             </b-col>
             <b-col class="box3">
               <div class="incomeorder">This Year's Income</div>
-              <div class="numberamount">Rp. 100.000.000.000</div>
+              <div class="numberamount">Rp. {{yearlyIncome[0].yearly}}</div>
               <div class="percentage">+10% Last Year</div>
             </b-col>
             <b-col class="box4">
@@ -134,7 +134,15 @@
                 </b-form>
               </div>
               <div class="tables">
-                <b-table class="tableOrder" striped hover :items="perDay"></b-table>
+                <b-table
+                  class="tableOrder"
+                  v-model="perDay"
+                  striped
+                  hover
+                  :items="perDay"
+                  :fields="fields"
+                ></b-table>
+                <b-button @click="todayCome"></b-button>
               </div>
             </b-col>
           </b-container>
@@ -154,12 +162,13 @@ export default {
       date: 'date',
       interval: 0,
       fields: [
-        { key: 'history_id', label: 'INVOICES' },
-        'CASHIER',
-        'DATE',
-        'ORDERS',
-        'AMOUNT'
+        { key: 'history_invoices', label: 'INVOICES' },
+        { key: 'cashier', label: 'CASHIER' },
+        { key: 'history_created_at', label: 'DATE' },
+        { key: 'orders', label: 'ORDERS' },
+        { key: 'history_subtotal', label: 'AMOUNT' }
       ],
+      items: [],
       forms: {
         history_invoices: '',
         history_created_at: '',
@@ -168,31 +177,59 @@ export default {
       history_id: '',
       todayIncome: [],
       orderCount: [],
-      perDay: []
+      perDay: [],
+      yearlyIncome: []
     }
   },
   components: {
     Navbar
   },
-  watch: {
-    perDay: function () {
-      console.log(this.perDay)
-    }
-  },
+  // watch: {
+  //   perDay: function () {
+  //     console.log(this.perDay)
+  //   }
+  // },
+
   created() {
     this.getIncomeToday()
     this.getOrderCount()
     this.getHistoryPerDay()
+    this.getIncomeYearly()
+  },
+  computed: {
+    ordersCount() {
+      return this.orderCount[0].orders
+    }
   },
   methods: {
+    todayCome() {
+      const come = this.todayIncome[0].income
+      console.log(come)
+    },
+    yearlyCome() {
+      return this.yearlyIncome[0].yearly
+    },
+    // getPerDay() {
+    //   const ordered = this.perDay[0].orders.map((value) => {
+    //     return value.product_name + ' ' + value.purchase_qty
+    //   })
+    //   const orderer = ordered.toString()
+    //   const setData = {
+    //     history_invoices: this.perDay[0].history_invoices,
+    //     cashier: 'Cashier 1',
+    //     history_created_at: this.perDay[0].history_created_at,
+    //     orderer,
+    //     history_subtotal: this.perDay[0].history_subtotal
+    //   }
+    //   this.items.push(setData)
+    //   console.log(this.items)
+    // },
     getHistoryPerDay() {
       axios
-        .get(
-          `http://127.0.0.1:3001/history/days/days?date=${this.date}&interval=${this.interval}`
-        )
+        .get('http://127.0.0.1:3001/history/days/days')
         .then((response) => {
-          this.perDay = response.data.data
-          // console.log(this.perDay)
+          this.perDay.push(response.data.data)
+          console.log(this.perDay)
         })
         .catch((error) => {
           console.log(error)
@@ -215,6 +252,17 @@ export default {
         .then((response) => {
           this.orderCount = response.data.data
           // console.log(this.orderCount)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    getIncomeYearly() {
+      axios
+        .get('http://127.0.0.1:3001/history/income/year')
+        .then((response) => {
+          this.yearlyIncome = response.data.data
+          // console.log(this.todayIncome)
         })
         .catch((error) => {
           console.log(error)

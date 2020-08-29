@@ -19,7 +19,7 @@
                         v-model="search"
                         v-show="isSearch"
                         placeholder="Search Product"
-                        v-on:change="search_product()"
+                        v-on:change="handleSearch"
                         class="searchProduct"
                       ></b-form-input>
                     </b-col>
@@ -60,17 +60,12 @@
                     label-for="sortBySelect"
                     class="mb-0"
                   >
-                    <b-form-select
-                      v-model="sort"
-                      id="sortBySelect"
-                      size="sm"
-                      @change="get_product()"
-                    >
+                    <b-form-select v-model="sort" id="sortBySelect" size="sm" @change="handleSort">
                       <option value>-- none --</option>
                       <option value="product_name">Name</option>
                       <option value="category_id">Category</option>
                       <option value="product_price">Price</option>
-                      <option value="product_updated_at DESC">New</option>
+                      <option value="product_created_at DESC">New</option>
                     </b-form-select>
                   </b-form-group>
                 </b-col>
@@ -89,7 +84,7 @@
                       v-model="limit"
                       id="perPageSelect"
                       size="sm"
-                      @change="get_product(), handleSort"
+                      @change="handleSort"
                     >
                       <option value>none</option>
                       <option value="3">3</option>
@@ -498,11 +493,11 @@ export default {
       this.page = event
       this.get_product()
     },
-    // handleSearch(event) {
-    //   this.$router.push(`?search=${event}`)
-    //   this.search = event
-    //   this.search_product()
-    // },
+    handleSearch(event) {
+      this.$router.push(`?keyword=${event}`)
+      this.search = event
+      this.search_product()
+    },
     handleSort(event) {
       this.$router.push(`?sort=${event}`)
       this.sort = event
