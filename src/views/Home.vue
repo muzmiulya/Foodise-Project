@@ -84,13 +84,9 @@
                       v-model="limit"
                       id="perPageSelect"
                       size="sm"
-                      @change="handleSort"
-                    >
-                      <option value>none</option>
-                      <option value="3">3</option>
-                      <option value="6">6</option>
-                      <option value="9">9</option>
-                    </b-form-select>
+                      :options="pageOptions"
+                      @change="handleLimit"
+                    ></b-form-select>
                   </b-form-group>
                 </b-col>
               </b-container>
@@ -272,12 +268,13 @@
             <b-row>
               <b-col xl="12" class="paginations">
                 <div class="d-flex justify-content-center">
-                  <b-pagination-nav
-                    class="pagination-nav"
-                    v-model="page"
-                    :pages="pages1"
+                  <b-pagination
+                    v-model="currentPage"
+                    :total-rows="rows"
+                    :per-page="limit"
                     @change="handlePageChange"
-                  ></b-pagination-nav>
+                    aria-controls="my-table"
+                  ></b-pagination>
                 </div>
               </b-col>
             </b-row>
@@ -400,11 +397,10 @@ export default {
       cart: [],
       page: 1,
       limit: 9,
+      pageOptions: [3, 6, 9],
       sort: '',
-      totalRows: 1,
       search: '',
       disabled: true,
-      pageOptions: [3, 6, 9],
       form: {
         category_id: '',
         product_name: '',
@@ -423,6 +419,8 @@ export default {
       isUpdate: false,
       isSearch: false,
       isCheck: false,
+      currentPage: 1,
+      totalRows: null,
       product_id: '',
       products: [],
       histories: [],
@@ -440,12 +438,15 @@ export default {
   updated() {
     console.log(this.$route.query)
   },
-  watch: {
-    totalSum: function () {
-      console.log(this.totalSum)
-    }
-  },
+  // watch: {
+  //   totalSum: function () {
+  //     console.log(this.totalSum)
+  //   }
+  // },
   computed: {
+    rows() {
+      return this.totalRows
+    },
     isDisabled() {
       return (
         this.form.product_name <= 0 ||
@@ -503,6 +504,11 @@ export default {
       this.sort = event
       this.get_product()
     },
+    handleLimit(event) {
+      this.$router.push(`?lim=${event}`)
+      this.limit = event
+      this.get_product()
+    },
     incrementQty(data) {
       const incrementData = this.cart.find(
         (value) => value.product_id === data.product_id
@@ -531,7 +537,8 @@ export default {
         )
         .then((response) => {
           this.products = response.data.data
-          console.log(this.products)
+          this.totalRows = response.data.pagination.totalData
+          console.log(this.totalRows)
         })
         .catch((error) => {
           console.log(error)

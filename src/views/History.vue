@@ -48,8 +48,8 @@
                   width="auto"
                   height="300px"
                   legend="bottom"
-                  label="This Month"
                   :data="datas"
+                  label="This Month"
                 ></line-chart>
               </div>
             </b-col>
@@ -170,7 +170,6 @@ export default {
       //     }
       //   }
       // ],
-
       datas: {},
       forms: {
         history_invoices: '',
@@ -188,12 +187,6 @@ export default {
   components: {
     Navbar
   },
-  // watch: {
-  //   perDay: function () {
-  //     console.log(this.perDay)
-  //   }
-  // },
-
   created() {
     this.getIncomeToday()
     this.getOrderCount()
@@ -230,7 +223,7 @@ export default {
         .get('http://127.0.0.1:3001/history/order/count')
         .then((response) => {
           this.orderCount = response.data.data[0]
-          // console.log(this.orderCount)
+          console.log(this.orderCount)
         })
         .catch((error) => {
           console.log(error)
