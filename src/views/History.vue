@@ -19,17 +19,17 @@
           <b-container class="grid-container">
             <b-col class="box1">
               <div class="incomeorder">Today's Income</div>
-              <div class="numberamount">Rp. {{ todayIncome.income }}</div>
+              <div class="numberamount">Rp. {{ todayIncome }}</div>
               <div class="percentage">+2% Yesterday</div>
             </b-col>
             <b-col class="box2">
               <div class="incomeorder">Orders</div>
-              <div class="numberamount">{{ orderCount.orders }}</div>
+              <div class="numberamount">{{ orderCount }}</div>
               <div class="percentage">+5% Last Week</div>
             </b-col>
             <b-col class="box3">
               <div class="incomeorder">This Year's Income</div>
-              <div class="numberamount">Rp. {{yearlyIncome.yearly}}</div>
+              <div class="numberamount">Rp. {{yearlyIncome}}</div>
               <div class="percentage">+10% Last Year</div>
             </b-col>
             <b-col class="box4">
@@ -211,7 +211,7 @@ export default {
       axios
         .get('http://127.0.0.1:3001/history/income/today')
         .then((response) => {
-          this.todayIncome = response.data.data[0]
+          this.todayIncome = response.data.data
           // console.log(this.todayIncome)
         })
         .catch((error) => {
@@ -222,8 +222,8 @@ export default {
       axios
         .get('http://127.0.0.1:3001/history/order/count')
         .then((response) => {
-          this.orderCount = response.data.data[0]
-          console.log(this.orderCount)
+          this.orderCount = response.data.data
+          // console.log(this.orderCount)
         })
         .catch((error) => {
           console.log(error)
@@ -233,8 +233,8 @@ export default {
       axios
         .get('http://127.0.0.1:3001/history/income/year')
         .then((response) => {
-          this.yearlyIncome = response.data.data[0]
-          // console.log(this.todayIncome)
+          this.yearlyIncome = response.data.data
+          // console.log(this.yearlyIncome)
         })
         .catch((error) => {
           console.log(error)
