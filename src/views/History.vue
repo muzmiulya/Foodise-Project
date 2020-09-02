@@ -19,18 +19,18 @@
           <b-container class="grid-container">
             <b-col class="box1">
               <div class="incomeorder">Today's Income</div>
-              <div class="numberamount">Rp. {{ todayIncome }}</div>
-              <div class="percentage">+2% Yesterday</div>
+              <div class="numberamount">Rp. {{ todayIncome.incomes }}</div>
+              <div class="percentage">{{todayIncome.incomeYesterday}} Yesterday</div>
             </b-col>
             <b-col class="box2">
               <div class="incomeorder">Orders</div>
-              <div class="numberamount">{{ orderCount }}</div>
-              <div class="percentage">+5% Last Week</div>
+              <div class="numberamount">{{ orderCount.countThisWeek }}</div>
+              <div class="percentage">{{ orderCount.countLastWeek }} Last Week</div>
             </b-col>
             <b-col class="box3">
               <div class="incomeorder">This Year's Income</div>
-              <div class="numberamount">Rp. {{yearlyIncome}}</div>
-              <div class="percentage">+10% Last Year</div>
+              <div class="numberamount">Rp. {{yearlyIncome.countThisYear}}</div>
+              <div class="percentage">{{yearlyIncome.countLastYear}} Last Year</div>
             </b-col>
             <b-col class="box4">
               <div class="revenue">Revenue</div>
@@ -56,12 +56,14 @@
             <b-col class="box5">
               <div class="recent">Recent Order</div>
               <div class="today">
-                <b-form>
-                  <select name="day" id="days">
-                    <option value="Today">Today</option>
-                    <option value="Yesterday">Yesterday</option>
-                  </select>
-                </b-form>
+                <div>
+                  <b-form-select
+                    v-model="date"
+                    text="Date"
+                    :options="options"
+                    @change="handleTable"
+                  ></b-form-select>
+                </div>
               </div>
               <div class="tables">
                 <b-table
@@ -176,6 +178,11 @@ export default {
         history_created_at: '',
         history_subtotal: ''
       },
+      options: [
+        { value: 'date', text: 'Today' },
+        { value: 'week', text: 'This Week' },
+        { value: 'month', text: 'This Month' }
+      ],
       history_id: '',
       todayIncome: [],
       orderCount: [],
@@ -196,12 +203,16 @@ export default {
   },
 
   methods: {
+    handleTable() {
+      this.getHistoryPerDay()
+    },
     getHistoryPerDay() {
       axios
-        .get('http://127.0.0.1:3001/history/days/days')
+        .get(`http://127.0.0.1:3001/history/days/days?date=${this.date}`)
         .then((response) => {
-          this.perDay.push(response.data.data)
-          // console.log(this.perDay)
+          this.perDay = response.data.data
+          // this.getHistoryPerDay()
+          console.log(this.perDay)
         })
         .catch((error) => {
           console.log(error)
@@ -212,6 +223,7 @@ export default {
         .get('http://127.0.0.1:3001/history/income/today')
         .then((response) => {
           this.todayIncome = response.data.data
+          // this.getIncomeToday()
           // console.log(this.todayIncome)
         })
         .catch((error) => {
@@ -223,6 +235,7 @@ export default {
         .get('http://127.0.0.1:3001/history/order/count')
         .then((response) => {
           this.orderCount = response.data.data
+          // this.getOrderCount()
           // console.log(this.orderCount)
         })
         .catch((error) => {
@@ -234,6 +247,7 @@ export default {
         .get('http://127.0.0.1:3001/history/income/year')
         .then((response) => {
           this.yearlyIncome = response.data.data
+          // this.getIncomeYearly()
           // console.log(this.yearlyIncome)
         })
         .catch((error) => {
@@ -245,6 +259,7 @@ export default {
         .get('http://127.0.0.1:3001/history/chart/monthly')
         .then((response) => {
           this.datas = response.data.data
+          // this.getChartMonthly()
           console.log(this.datas)
         })
         .catch((error) => {

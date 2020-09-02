@@ -1,6 +1,12 @@
 <template>
   <div class="home">
     <b-container fluid>
+      <link
+        rel="stylesheet"
+        href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+        crossorigin="anonymous"
+      />
       <b-row>
         <b-col class="firstColumn" xl="8" lg="8" md="8" sm="12" cols="12">
           <b-row>
@@ -9,7 +15,7 @@
             </b-col>
             <b-col class="foodItems" xl="9" lg="8" md="8" sm="8" cols="6">
               <div>
-                <h2 v-show="!isSearch">Food Items</h2>
+                <h2 v-show="!isSearch">Foodsie</h2>
                 <b-container v-show="isSearch">
                   <b-row>
                     <form></form>
@@ -44,7 +50,7 @@
         </b-col>
       </b-row>
       <b-row>
-        <Navbar />
+        <Navbar :adds="addProduct"></Navbar>
         <b-col class="gridbackground" md="7">
           <div class="main">
             <b-row>
@@ -61,32 +67,24 @@
                     class="mb-0"
                   >
                     <b-form-select v-model="sort" id="sortBySelect" size="sm" @change="handleSort">
-                      <option value>-- none --</option>
-                      <option value="product_name">Name</option>
-                      <option value="category_id">Category</option>
-                      <option value="product_price">Price</option>
-                      <option value="product_created_at DESC">New</option>
+                      <b-form-select-option value>-- none --</b-form-select-option>
+                      <b-form-select-option-group label="Product Name">
+                        <b-form-select-option value="product_name">Name (A-Z)</b-form-select-option>
+                        <b-form-select-option value="product_name DESC">Name (Z-A)</b-form-select-option>
+                      </b-form-select-option-group>
+                      <b-form-select-option-group label="Category">
+                        <option value="category_id">Food</option>
+                        <option value="category_id DESC">Drink</option>
+                      </b-form-select-option-group>
+                      <b-form-select-option-group label="Price">
+                        <option value="product_price">Low to High</option>
+                        <option value="product_price DESC">High to Low</option>
+                      </b-form-select-option-group>
+                      <b-form-select-option-group label="Created">
+                        <option value="product_created_at">Oldest</option>
+                        <option value="product_created_at DESC">Newest</option>
+                      </b-form-select-option-group>
                     </b-form-select>
-                  </b-form-group>
-                </b-col>
-                <b-col xl="4" lg="4" md="6" sm="6" class="my-1">
-                  <b-form-group
-                    label="Limit"
-                    label-cols-sm="4"
-                    label-cols-md="4"
-                    label-cols-lg="3"
-                    label-align-sm="right"
-                    label-size="sm"
-                    label-for="perPageSelect"
-                    class="mb-0"
-                  >
-                    <b-form-select
-                      v-model="limit"
-                      id="perPageSelect"
-                      size="sm"
-                      :options="pageOptions"
-                      @change="handleLimit"
-                    ></b-form-select>
                   </b-form-group>
                 </b-col>
               </b-container>
@@ -103,7 +101,7 @@
                 >
                   <b-container>
                     <b-alert v-bind:show="alert">{{ isMsg }}</b-alert>
-                    <form class="formAdd" v-on:submit.prevent="addProduct">
+                    <form class="formAdd" v-on:submit.prevent="patchProduct">
                       <b-form-input
                         type="text"
                         v-model="form.product_name"
@@ -122,12 +120,11 @@
                         placeholder="Poduct Picture"
                       ></b-form-input>
                       <br />
-                      <b-form-input
-                        type="number"
-                        v-model="form.product_status"
-                        placeholder="Poduct Status"
-                      ></b-form-input>
-                      <br />
+                      <b-form-select v-model="form.product_status" size="sm">
+                        <option disabled value selected>Product Status</option>
+                        <option value="1">Active</option>
+                        <option value="0">Not-Active</option>
+                      </b-form-select>
                       <b-form-select v-model="form.category_id" size="sm">
                         <option disabled value selected>Category</option>
                         <option value="1">Food</option>
@@ -171,34 +168,16 @@
                           }}
                         </b-card-text>
                         <b-button
+                          pill
                           v-show="isHiding(item)"
                           variant="primary"
                           @click="addToCart(item), isHiding(item)"
                           style="width:33%"
                         >
-                          <svg
-                            width="1em"
-                            height="1em"
-                            viewBox="0 0 16 16"
-                            class="bi bi-cart-plus"
-                            fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              d="M8.5 5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1H8V5.5a.5.5 0 0 1 .5-.5z"
-                            />
-                            <path
-                              fill-rule="evenodd"
-                              d="M8 7.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1H9v1.5a.5.5 0 0 1-1 0v-2z"
-                            />
-                            <path
-                              fill-rule="evenodd"
-                              d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"
-                            />
-                          </svg>
+                          <i class="fas fa-cart-plus"></i>
                         </b-button>
                         <b-button
+                          pill
                           v-show="!isHiding(item)"
                           variant="danger"
                           style="width:33%"
@@ -207,56 +186,23 @@
                           <span aria-hidden="true">&times;</span>
                         </b-button>
                         <b-button
+                          pill
                           v-show="isHiding(item)"
                           variant="success"
                           style="width:33%"
                           v-b-modal.modal-update
                           @click="setProduct(item)"
                         >
-                          <svg
-                            width="1em"
-                            height="1em"
-                            viewBox="0 0 16 16"
-                            class="bi bi-patch-plus"
-                            fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              d="M10.273 2.513l-.921-.944.715-.698.622.637.89-.011a2.89 2.89 0 0 1 2.924 2.924l-.01.89.636.622a2.89 2.89 0 0 1 0 4.134l-.637.622.011.89a2.89 2.89 0 0 1-2.924 2.924l-.89-.01-.622.636a2.89 2.89 0 0 1-4.134 0l-.622-.637-.89.011a2.89 2.89 0 0 1-2.924-2.924l.01-.89-.636-.622a2.89 2.89 0 0 1 0-4.134l.637-.622-.011-.89a2.89 2.89 0 0 1 2.924-2.924l.89.01.622-.636a2.89 2.89 0 0 1 4.134 0l-.715.698a1.89 1.89 0 0 0-2.704 0l-.92.944-1.32-.016a1.89 1.89 0 0 0-1.911 1.912l.016 1.318-.944.921a1.89 1.89 0 0 0 0 2.704l.944.92-.016 1.32a1.89 1.89 0 0 0 1.912 1.911l1.318-.016.921.944a1.89 1.89 0 0 0 2.704 0l.92-.944 1.32.016a1.89 1.89 0 0 0 1.911-1.912l-.016-1.318.944-.921a1.89 1.89 0 0 0 0-2.704l-.944-.92.016-1.32a1.89 1.89 0 0 0-1.912-1.911l-1.318.016z"
-                            />
-                            <path
-                              fill-rule="evenodd"
-                              d="M8 5.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z"
-                            />
-                            <path
-                              fill-rule="evenodd"
-                              d="M7.5 8a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8z"
-                            />
-                          </svg>
+                          <i class="fas fa-edit"></i>
                         </b-button>
                         <b-button
+                          pill
                           v-show="isHiding(item)"
                           variant="danger"
                           @click="deleteProduct(item)"
                           style="width:33%"
                         >
-                          <svg
-                            width="1em"
-                            height="1em"
-                            viewBox="0 0 16 16"
-                            class="bi bi-trash"
-                            fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"
-                            />
-                            <path
-                              fill-rule="evenodd"
-                              d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
-                            />
-                          </svg>
+                          <i class="far fa-trash-alt"></i>
                         </b-button>
                       </b-card-body>
                     </b-card>
@@ -408,6 +354,7 @@ export default {
         product_picture: '',
         product_status: ''
       },
+      forms: {},
       checkout: {},
       pages1: [
         { text: '1', value: '1' },
@@ -435,14 +382,7 @@ export default {
     this.get_product()
     this.search_product()
   },
-  updated() {
-    console.log(this.$route.query)
-  },
-  // watch: {
-  //   totalSum: function () {
-  //     console.log(this.totalSum)
-  //   }
-  // },
+
   computed: {
     rows() {
       return this.totalRows
@@ -504,11 +444,6 @@ export default {
       this.sort = event
       this.get_product()
     },
-    handleLimit(event) {
-      this.$router.push(`?lim=${event}`)
-      this.limit = event
-      this.get_product()
-    },
     incrementQty(data) {
       const incrementData = this.cart.find(
         (value) => value.product_id === data.product_id
@@ -530,6 +465,19 @@ export default {
       }
       this.cart = [...this.cart, setCart]
     },
+    addProduct(data) {
+      console.log(data)
+      axios
+        .post('http://127.0.0.1:3001/product', data)
+        .then((response) => {
+          this.alert = true
+          this.isMsg = response.data.msg
+          this.get_product()
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
     get_product(event) {
       axios
         .get(
@@ -538,7 +486,7 @@ export default {
         .then((response) => {
           this.products = response.data.data
           this.totalRows = response.data.pagination.totalData
-          console.log(this.totalRows)
+          // console.log(this.totalRows)
         })
         .catch((error) => {
           console.log(error)
@@ -551,8 +499,6 @@ export default {
         )
         .then((response) => {
           this.products = response.data.data
-          // this.$router.push(`?search=${event}`)
-          console.log(this.products)
         })
         .catch((error) => {
           console.log(error)
@@ -577,7 +523,7 @@ export default {
       axios
         .patch(`http://127.0.0.1:3001/product/${this.product_id}`, this.form)
         .then((response) => {
-          console.log(response)
+          this.get_product()
           this.alert = true
           this.isMsg = response.data.msg
         })
@@ -590,7 +536,7 @@ export default {
       axios
         .delete(`http://127.0.0.1:3001/product/${data.product_id}`, this.form)
         .then((response) => {
-          console.log(response)
+          this.get_product()
           this.alert = true
           this.isMsg = response.data.msg
         })
