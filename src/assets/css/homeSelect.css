@@ -3,6 +3,9 @@
 } */
 /* Header */
 
+/* .logout {
+  cursor: pointer;
+} */
 .firstColumn {
   border-bottom: 2px solid lightgrey;
   position: relative;
@@ -108,7 +111,14 @@
   width: 50px;
 }
 
-/* Modal add */
+/* Modal patch */
+.modal-body {
+  display: grid;
+}
+.buttonChange {
+  width: fit-content;
+  justify-self: center;
+}
 .formAdd {
   display: grid;
   height: auto;
@@ -135,6 +145,26 @@
   width: 20%;
   height: 150%;
   justify-self: end;
+}
+
+/* Modal delete */
+.modaldelete {
+  display: grid;
+  grid-template-rows: 50% 50%;
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    'yousure yousure yousure'
+    'cancel . yes';
+}
+.youSure {
+  text-align: center;
+  grid-area: yousure;
+}
+.buttonCancelDel {
+  grid-area: cancel;
+}
+.buttonYesDel {
+  grid-area: yes;
 }
 
 /* Main */

@@ -36,10 +36,12 @@
               <div class="revenue">Revenue</div>
               <div class="month">
                 <b-form>
-                  <select name="months" id="months">
-                    <option value="thismonth">Month</option>
-                    <option value="lastmonth">Last</option>
-                  </select>
+                  <b-form-select
+                    v-model="month"
+                    text="Month"
+                    :options="monthoptions"
+                    @change="handleChart"
+                  ></b-form-select>
                 </b-form>
               </div>
               <div class="chart">
@@ -65,16 +67,27 @@
                   ></b-form-select>
                 </div>
               </div>
-              <div class="tables">
+              <b-container class="tables">
                 <b-table
                   class="tableOrder"
-                  v-model="perDay"
                   striped
                   hover
                   :items="perDay"
                   :fields="fields"
+                  :per-page="perPage"
+                  :current-page="currentPage"
                 ></b-table>
-              </div>
+                <div class="paginations">
+                  <b-pagination
+                    v-model="currentPage"
+                    :total-rows="rows"
+                    :per-page="perPage"
+                    size="md"
+                    class="my-0"
+                    @change="handlePageChange"
+                  ></b-pagination>
+                </div>
+              </b-container>
             </b-col>
           </b-container>
         </b-col>
@@ -100,6 +113,7 @@ export default {
         { key: 'history_subtotal', label: 'AMOUNT' }
       ],
       items: [],
+      month: 'MONTH(NOW())',
       // datas: [
       //   {
       //     name: 'This Month',
@@ -183,7 +197,25 @@ export default {
         { value: 'week', text: 'This Week' },
         { value: 'month', text: 'This Month' }
       ],
+      monthoptions: [
+        { value: 'MONTH(NOW())', text: 'This Month' },
+        { value: '1', text: 'January' },
+        { value: '2', text: 'February' },
+        { value: '3', text: 'March' },
+        { value: '4', text: 'April' },
+        { value: '5', text: 'May' },
+        { value: '6', text: 'June' },
+        { value: '7', text: 'July' },
+        { value: '8', text: 'August' },
+        { value: '9', text: 'September' },
+        { value: '10', text: 'October' },
+        { value: '11', text: 'November' },
+        { value: '12', text: 'December' }
+      ],
       history_id: '',
+      currentPage: 1,
+      perPage: 5,
+      totalRows: null,
       todayIncome: [],
       orderCount: [],
       perDay: [],
@@ -194,6 +226,11 @@ export default {
   components: {
     Navbar
   },
+  computed: {
+    rows() {
+      return this.totalRows
+    }
+  },
   created() {
     this.getIncomeToday()
     this.getOrderCount()
@@ -203,15 +240,29 @@ export default {
   },
 
   methods: {
+    handlePageChange(event) {
+      this.currentPage = event
+      this.getHistoryPerDay()
+    },
     handleTable() {
       this.getHistoryPerDay()
+    },
+    handleChart() {
+      this.getChartMonthly()
     },
     getHistoryPerDay() {
       axios
         .get(`http://127.0.0.1:3001/history/days/days?date=${this.date}`)
         .then((response) => {
-          this.perDay = response.data.data
-          // this.getHistoryPerDay()
+          const datas = response.data.data.map((value) => {
+            const setData = {
+              cashier: 'Cashier 1',
+              ...value
+            }
+            return setData
+          })
+          this.perDay = datas
+          this.totalRows = response.data.data.length
           console.log(this.perDay)
         })
         .catch((error) => {
@@ -256,11 +307,11 @@ export default {
     },
     getChartMonthly() {
       axios
-        .get('http://127.0.0.1:3001/history/chart/monthly')
+        .get(`http://127.0.0.1:3001/history/chart/monthly?months=${this.month}`)
         .then((response) => {
           this.datas = response.data.data
           // this.getChartMonthly()
-          console.log(this.datas)
+          // console.log(this.datas)
         })
         .catch((error) => {
           console.log(error)

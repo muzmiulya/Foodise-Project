@@ -50,7 +50,7 @@
         </b-col>
       </b-row>
       <b-row>
-        <Navbar :adds="addProduct"></Navbar>
+        <Navbar></Navbar>
         <b-col class="gridbackground" md="7">
           <div class="main">
             <b-row>
@@ -98,6 +98,7 @@
                   title="Update Item"
                   hide-footer
                   no-close-on-backdrop
+                  @close="alertClose()"
                 >
                   <b-container>
                     <b-alert v-bind:show="alert">{{ isMsg }}</b-alert>
@@ -106,32 +107,64 @@
                         type="text"
                         v-model="form.product_name"
                         placeholder="Poduct Name"
+                        required
                       ></b-form-input>
                       <br />
                       <b-form-input
                         type="number"
                         v-model="form.product_price"
                         placeholder="Poduct Price"
+                        required
                       ></b-form-input>
                       <br />
-                      <b-form-input
-                        type="text"
-                        v-model="form.product_picture"
-                        placeholder="Poduct Picture"
-                      ></b-form-input>
+                      <b-form-file
+                        id="inputPi"
+                        type="file"
+                        @change="handleFile"
+                        placeholder="Choose a file..."
+                        drop-placeholder="Drop file here..."
+                        required
+                      ></b-form-file>
                       <br />
-                      <b-form-select v-model="form.product_status" size="sm">
+                      <b-form-select v-model="form.product_status" size="sm" required>
                         <option disabled value selected>Product Status</option>
                         <option value="1">Active</option>
                         <option value="0">Not-Active</option>
                       </b-form-select>
-                      <b-form-select v-model="form.category_id" size="sm">
-                        <option disabled value selected>Category</option>
-                        <option value="1">Food</option>
-                        <option value="2">Drink</option>
-                      </b-form-select>
-                      <b-button :disabled="isDisabled" type="submit" @click="patchProduct()">Update</b-button>
+                      <b-form-select
+                        v-model="form.category_id"
+                        :options="category"
+                        size="sm"
+                        required
+                      ></b-form-select>
+                      <b-button type="submit" @click="patchProduct()">Update</b-button>
                     </form>
+                  </b-container>
+                </b-modal>
+                <b-modal
+                  id="modal-delete"
+                  hide-header
+                  hide-footer
+                  no-close-on-backdrop
+                  no-close-on-esc
+                >
+                  <b-container class="modaldelete">
+                    <div class="youSure">
+                      <h3>Are You Sure?</h3>
+                    </div>
+                    <br />
+                    <b-button
+                      class="buttonCancelDel"
+                      pill
+                      variant="warning"
+                      @click="$bvModal.hide('modal-delete')"
+                    >Cancel</b-button>
+                    <b-button
+                      class="buttonYesDel"
+                      pill
+                      variant="danger"
+                      @click="deleteProduct(), $bvModal.hide('modal-delete')"
+                    >Yes</b-button>
                   </b-container>
                 </b-modal>
                 <b-row>
@@ -171,7 +204,7 @@
                           pill
                           v-show="isHiding(item)"
                           variant="primary"
-                          @click="addToCart(item), isHiding(item)"
+                          @click="addToCarts(item), isHiding(item)"
                           style="width:33%"
                         >
                           <i class="fas fa-cart-plus"></i>
@@ -199,8 +232,9 @@
                           pill
                           v-show="isHiding(item)"
                           variant="danger"
-                          @click="deleteProduct(item)"
                           style="width:33%"
+                          v-b-modal.modal-delete
+                          @click="setDelete(item)"
                         >
                           <i class="far fa-trash-alt"></i>
                         </b-button>
@@ -215,7 +249,7 @@
               <b-col xl="12" class="paginations">
                 <div class="d-flex justify-content-center">
                   <b-pagination
-                    v-model="currentPage"
+                    v-model="page"
                     :total-rows="rows"
                     :per-page="limit"
                     @change="handlePageChange"
@@ -226,6 +260,7 @@
             </b-row>
           </div>
         </b-col>
+        <!-- <Aside></Aside> -->
         <b-col class="yourcart" md="4">
           <div class="theGrid" v-if="cart.length > 0">
             <div class="gridbox1">
@@ -280,6 +315,7 @@
                   title="Checkout"
                   hide-footer
                   no-close-on-backdrop
+                  @close="deleteEventAll()"
                 >
                   <div class="Checkouts">
                     <div class="firstRow">
@@ -303,13 +339,21 @@
                       <div class="payment">Payment: Cash</div>
                     </div>
                     <div class="fifthRow">
-                      <b-button class="buttonPrint" variant="success">Print</b-button>
+                      <b-button
+                        class="buttonPrint"
+                        variant="success"
+                        @click="deleteEventAll()"
+                      >Print</b-button>
                     </div>
                     <div class="sixthRow">
                       <h6>Or</h6>
                     </div>
                     <div class="seventhRow">
-                      <b-button class="buttonSendEmail" variant="primary">Send Email</b-button>
+                      <b-button
+                        class="buttonSendEmail"
+                        variant="primary"
+                        @click="deleteEventAll()"
+                      >Send Email</b-button>
                     </div>
                   </div>
                 </b-modal>
@@ -335,26 +379,25 @@
 <script>
 import axios from 'axios'
 import Navbar from '../components/_base/Navbar'
+// import Aside from '../components/_base/Aside'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'Home',
   data() {
     return {
-      count: 0,
-      cart: [],
-      page: 1,
-      limit: 9,
-      pageOptions: [3, 6, 9],
-      sort: '',
+      // cart: [],
+      // page: 1,
+      // limit: 9,
+      // sort: '',
       search: '',
       disabled: true,
       form: {
         category_id: '',
         product_name: '',
         product_price: '',
-        product_picture: '',
+        product_picture: {},
         product_status: ''
       },
-      forms: {},
       checkout: {},
       pages1: [
         { text: '1', value: '1' },
@@ -362,36 +405,45 @@ export default {
         { text: '3', value: '3' }
       ],
       alert: false,
+      alertDel: false,
       isMsg: '',
+      isMsgDel: '',
       isUpdate: false,
       isSearch: false,
       isCheck: false,
-      currentPage: 1,
-      totalRows: null,
-      product_id: '',
-      products: [],
-      histories: [],
-      totalSum: []
+      // totalRows: null,
+      // product_id: '',
+      // products: [],
+      // category: [],
+      histories: []
     }
   },
 
   components: {
     Navbar
+    // Aside
   },
   created() {
-    this.get_product()
+    this.getProducts()
     this.search_product()
+    this.getCategory()
   },
 
   computed: {
-    rows() {
-      return this.totalRows
-    },
+    ...mapGetters({
+      limit: 'getLimit',
+      page: 'getPage',
+      sort: 'getSort',
+      rows: 'getTotalRows',
+      products: 'getProduct',
+      category: 'getCategory',
+      cart: 'getCart'
+    }),
     isDisabled() {
       return (
         this.form.product_name <= 0 ||
         this.form.product_price <= 0 ||
-        this.form.product_picture <= 0 ||
+        this.form.product_picture.length <= 0 ||
         this.form.product_status <= 0 ||
         this.form.category_id <= 0
       )
@@ -408,10 +460,19 @@ export default {
   },
 
   methods: {
+    ...mapActions([
+      'getProducts',
+      'getCategory',
+      'updateProducts',
+      'deleteProducts'
+    ]),
+    ...mapMutations(['setPage', 'addToCarts']),
     checkCart(data) {
       return this.cart.some((item) => item.product_id === data.product_id)
     },
-
+    alertClose() {
+      this.alert = false
+    },
     isHiding(data) {
       if (this.cart.some((item) => item.product_id === data.product_id)) {
         return false
@@ -429,10 +490,15 @@ export default {
     deleteEventAll() {
       this.cart.splice(0, this.cart.length)
     },
+    handleFile(event) {
+      this.form.product_picture = event.target.files[0]
+      console.log(event.target.files[0])
+    },
     handlePageChange(event) {
       this.$router.push(`?page=${event}`)
-      this.page = event
-      this.get_product()
+      // this.page = event
+      this.setPage(event)
+      this.getProducts()
     },
     handleSearch(event) {
       this.$router.push(`?keyword=${event}`)
@@ -442,7 +508,7 @@ export default {
     handleSort(event) {
       this.$router.push(`?sort=${event}`)
       this.sort = event
-      this.get_product()
+      this.getProducts()
     },
     incrementQty(data) {
       const incrementData = this.cart.find(
@@ -465,46 +531,47 @@ export default {
       }
       this.cart = [...this.cart, setCart]
     },
-    addProduct(data) {
-      console.log(data)
-      axios
-        .post('http://127.0.0.1:3001/product', data)
-        .then((response) => {
-          this.alert = true
-          this.isMsg = response.data.msg
-          this.get_product()
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
-    get_product(event) {
-      axios
-        .get(
-          `http://127.0.0.1:3001/product?sort=${this.sort}&page=${this.page}&limit=${this.limit}`
-        )
-        .then((response) => {
-          this.products = response.data.data
-          this.totalRows = response.data.pagination.totalData
-          // console.log(this.totalRows)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
+    // addProduct(event) {
+    //   console.log(event)
+    //   axios
+    //     .post('http://127.0.0.1:3001/product', event)
+    //     .then((response) => {
+    //       this.alert = true
+    //       this.isMsg = response.data.msg
+    //       this.get_product()
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // },
+    // get_product() {
+    //   axios
+    //     .get(
+    //       `http://127.0.0.1:3001/product?sort=${this.sort}&page=${this.page}&limit=${this.limit}`
+    //     )
+    //     .then((response) => {
+    //       this.products = response.data.data
+    //       this.totalRows = response.data.pagination.totalData
+    //       // console.log(this.totalRows)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // },
     search_product(event) {
       axios
         .get(
           `http://127.0.0.1:3001/product/search/name?search=${this.search}&limit=${this.limit}`
         )
         .then((response) => {
-          this.products = response.data.data
+          // this.products = response.data.data
+          this.totalRows2 = response.data.data.length
+          // console.log(this.products)
         })
         .catch((error) => {
           console.log(error)
         })
     },
-
     setProduct(data) {
       this.form = {
         product_name: data.product_name,
@@ -516,32 +583,88 @@ export default {
       this.isUpdate = true
       this.product_id = data.product_id
     },
+    setDelete(data) {
+      this.form = {
+        product_name: data.product_name,
+        category_id: data.category_id,
+        product_price: data.product_price,
+        product_picture: data.product_picture,
+        product_status: data.product_status
+      }
+      this.product_id = data.product_id
+    },
+    // patchProduct() {
+    //   console.log(this.product_id)
+    //   console.log(this.form)
+    //   this.isUpdate = false
+    //   axios
+    //     .patch(`http://127.0.0.1:3001/product/${this.product_id}`, this.form)
+    //     .then((response) => {
+    //       this.get_product()
+    //       this.alert = true
+    //       this.isMsg = response.data.msg
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // },
     patchProduct() {
-      console.log(this.product_id)
-      console.log(this.form)
+      const data = new FormData()
+      data.append('product_name', this.form.product_name)
+      data.append('category_id', this.form.category_id)
+      data.append('product_price', this.form.product_price)
+      data.append('product_picture', this.form.product_picture)
+      data.append('product_status', this.form.product_status)
+      const setData = {
+        product_id: this.product_id,
+        form: data
+      }
       this.isUpdate = false
-      axios
-        .patch(`http://127.0.0.1:3001/product/${this.product_id}`, this.form)
+      this.updateProducts(setData)
         .then((response) => {
-          this.get_product()
           this.alert = true
-          this.isMsg = response.data.msg
+          this.isMsg = response.msg
+          this.getProducts()
         })
         .catch((error) => {
-          console.log(error)
+          this.alert = true
+          this.isMsg = error.data.msg
         })
     },
-    deleteProduct(data) {
-      console.log(data.product_id)
-      axios
-        .delete(`http://127.0.0.1:3001/product/${data.product_id}`, this.form)
+    // deleteProduct() {
+    //   console.log(this.product_id)
+    //   axios
+    //     .delete(`http://127.0.0.1:3001/product/${this.product_id}`, this.form)
+    //     .then((response) => {
+    //       this.getProducts()
+    //       this.alert = true
+    //       // this.isMsg = response.data.msg
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // },
+    deleteProduct() {
+      const data = new FormData()
+      data.append('product_name', this.form.product_name)
+      data.append('category_id', this.form.category_id)
+      data.append('product_price', this.form.product_price)
+      data.append('product_picture', this.form.product_picture)
+      data.append('product_status', this.form.product_status)
+      const setData = {
+        product_id: this.product_id,
+        form: data
+      }
+      this.isUpdate = false
+      this.deleteProducts(setData)
         .then((response) => {
-          this.get_product()
-          this.alert = true
-          this.isMsg = response.data.msg
+          this.alertDel = true
+          this.isMsgDel = response.msg
+          this.getProducts()
         })
         .catch((error) => {
-          console.log(error)
+          this.alertDel = true
+          this.isMsgDel = error.data.msg
         })
     },
     postOrder() {
@@ -558,6 +681,38 @@ export default {
           console.log(error)
         })
     }
+    // getCategory() {
+    //   axios
+    //     .get('http://127.0.0.1:3001/category')
+    //     .then((response) => {
+    //       const datas = response.data.data.map((value) => {
+    //         const setData = {
+    //           value: value.category_id,
+    //           text: value.category_name
+    //         }
+    //         return setData
+    //       })
+    //       this.category = [{ value: '', text: 'Category' }, ...datas]
+    //       // console.log(this.category)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // }
+    // addCategory(event) {
+    //   console.log(event)
+    //   axios
+    //     .post('http://127.0.0.1:3001/category', event)
+    //     .then((response) => {
+    //       this.alert = true
+    //       this.isMsg = response.data.msg
+    //       this.getCategory()
+    //       // console.log(this.isMsg)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // }
   }
 }
 </script>
