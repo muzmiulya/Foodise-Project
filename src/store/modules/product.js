@@ -5,6 +5,7 @@ export default {
     page: 1,
     limit: 9,
     sort: '',
+    search: '',
     products: [],
     totalRows: null,
     product_id: ''
@@ -13,11 +14,16 @@ export default {
     setProduct(state, payload) {
       state.products = payload.data
       state.totalRows = payload.pagination.totalData
+      //   console.log(state.totalRows)
+    },
+    setSearch(state, payload) {
+      state.search = payload
     },
     setPage(state, payload) {
       state.page = payload
-      console.log(payload)
-      console.log(state.page)
+    },
+    setSort(state, payload) {
+      state.sort = payload
     }
   },
   actions: {
@@ -28,6 +34,21 @@ export default {
         )
         .then(response => {
           context.commit('setProduct', response.data)
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    },
+    searchProduct(context, payload) {
+      axios
+        .get(
+          `http://127.0.0.1:3001/product/search/name?search=${context.state.search}&page=${context.state.page}&limit=${context.state.limit}`
+        )
+        .then(response => {
+          //   console.log(response)
+          context.commit('setProduct', response.data)
+          //   console.log(context.state.search)
+          //   console.log(context.state.limit)
         })
         .catch(error => {
           console.log(error)
@@ -61,7 +82,7 @@ export default {
       })
     },
     deleteProducts(context, payload) {
-      console.log(payload)
+      //   console.log(payload)
       return new Promise((resolve, reject) => {
         axios
           .delete(
@@ -89,6 +110,9 @@ export default {
     },
     getSort(state) {
       return state.sort
+    },
+    getSearch(state) {
+      return state.search
     },
     getProduct(state) {
       return state.products

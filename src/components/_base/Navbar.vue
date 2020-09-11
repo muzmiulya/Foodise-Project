@@ -1,5 +1,11 @@
 <template>
   <b-col class="sideHome" xl="1" lg="1" md="1">
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+      integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
+      crossorigin="anonymous"
+    />
     <b-row>
       <b-col class="forkSpoon homeSide" xl="12">
         <router-link to="/" vslot="{ route, navigate}">
@@ -21,7 +27,11 @@
     <b-row>
       <b-col class="add homeSide" xl="12">
         <div>
-          <b-button v-b-tooltip.hover.top="'Add Product'" class="addButton" v-b-modal.modal-1>
+          <b-button
+            v-b-tooltip.hover.top="'Add Product'"
+            class="addButton"
+            v-b-modal.modal-1
+          >
             <img alt="Vue add" src="../../assets/5.png" />
           </b-button>
 
@@ -39,16 +49,22 @@
               variant="success"
               v-show="!isShown"
               @click="isShown = !isShown"
-            >Category</b-button>
+              >Category</b-button
+            >
             <b-button
               class="buttonChange"
               variant="success"
               v-show="isShown"
               @click="isShown = !isShown"
-            >Product</b-button>
+              >Product</b-button
+            >
             <br />
             <b-container class="addModalContainer">
-              <form v-show="!isShown" class="formAdd" v-on:submit.prevent="addProduct">
+              <form
+                v-show="!isShown"
+                class="formAdd"
+                v-on:submit.prevent="addProduct"
+              >
                 <b-form-input
                   id="inputN"
                   type="text"
@@ -94,9 +110,15 @@
                   :options="category"
                   required
                 ></b-form-select>
-                <b-button :disabled="isDisabled" @click.prevent="postProduct">Add</b-button>
+                <b-button :disabled="isDisabled" @click.prevent="postProduct"
+                  >Add</b-button
+                >
               </form>
-              <form v-show="isShown" class="formAdd" v-on:submit.prevent="addProduct">
+              <form
+                v-show="isShown"
+                class="formAdd"
+                v-on:submit.prevent="addProduct"
+              >
                 <b-form-input
                   id="inputCN"
                   type="text"
@@ -117,7 +139,9 @@
                   <option value="0">Non-Active</option>
                 </b-form-select>
                 <br />
-                <b-button :disabled="isDisabled2" @click="addCategory()">Add</b-button>
+                <b-button :disabled="isDisabled2" @click="addCategory()"
+                  >Add</b-button
+                >
               </form>
             </b-container>
           </b-modal>
@@ -126,9 +150,22 @@
     </b-row>
     <b-row>
       <b-col class="history homeSide" xl="12">
-        <b-button v-b-tooltip.hover.top="'Logout'" class="logout" @click="handleLogout">
+        <b-button
+          v-b-tooltip.hover.top="'Logout'"
+          class="logout"
+          @click="handleLogout"
+        >
           <img alt="Vue history" src="../../assets/signout.png" />
         </b-button>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col class="history homeSide" xl="12">
+        <router-link to="/user" vslot="{ route, navigate}">
+          <b-button v-b-tooltip.hover.top="'User Controller'">
+            <img alt="Vue history" src="../../assets/users.png" />
+          </b-button>
+        </router-link>
       </b-col>
     </b-row>
   </b-col>
@@ -140,10 +177,6 @@ export default {
   name: 'Navbar',
   data() {
     return {
-      count: 0,
-      page: 1,
-      limit: 9,
-      sort: '',
       form: {
         category_id: '',
         product_name: '',
@@ -158,8 +191,6 @@ export default {
       alerts: false,
       isMsg: '',
       isShown: false,
-      isUpdate: false,
-      product_id: '',
       products: []
     }
   },
@@ -205,24 +236,24 @@ export default {
       data.append('product_picture', this.form.product_picture)
       console.log(data)
       this.addProducts(data)
-        .then((response) => {
+        .then(response => {
           this.alerts = true
           this.isMsg = response.msg
           this.getProducts()
         })
-        .catch((error) => {
+        .catch(error => {
           this.alerts = true
           this.isMsg = error.data.msg
         })
     },
     addCategory() {
       this.addCategories(this.form2)
-        .then((response) => {
+        .then(response => {
           this.alerts = true
           this.isMsg = response.msg
           this.getCategory()
         })
-        .catch((error) => {
+        .catch(error => {
           this.alerts = true
           this.isMsg = error.data.msg
         })

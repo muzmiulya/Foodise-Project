@@ -15,7 +15,11 @@
             </div>
           </div>
           <div class="item-d">
-            <b-button type="button" :disabled="item.purchase_qty === 1" @click="decrementQty(item)">
+            <b-button
+              type="button"
+              :disabled="item.purchase_qty === 1"
+              @click="decrementQty(item)"
+            >
               <img alt="Vue pictures" src="../../assets/minus.png" />
             </b-button>
           </div>
@@ -32,7 +36,7 @@
       <div class="gridbox2">
         <div class="totalP">
           <div class="total">Total:</div>
-          <div class="totalnumber">Rp. {{ computedSum }}</div>
+          <div class="totalnumber">Rp. {{ totals }}</div>
         </div>
         <div class="ppn">*belum termasuk ppn</div>
         <div class="checkoutbutton">
@@ -41,8 +45,9 @@
             type="button"
             class="btn-primary"
             v-b-modal.modal-checkout
-            @click="postOrder()"
-          >Checkout</b-button>
+            @click="orderPost"
+            >Checkout</b-button
+          >
           <b-modal
             id="modal-checkout"
             class="modalCheck"
@@ -54,26 +59,43 @@
             <div class="Checkouts">
               <div class="firstRow">
                 <div class="cashier">Cashier: Pevita Pearce</div>
-                <div class="cashier">Receipt no: #{{ histories.history_invoices }}</div>
+                <div class="cashier">
+                  Receipt no: #{{ histories.history_invoices }}
+                </div>
               </div>
               <div class="secondRow">
-                <div class="loopProduct" v-for="(item, index) in cart" :key="index">
-                  <div class="ordered">{{ item.product_name }} x{{ item.purchase_qty }}</div>
-                  <div class="ordered">Rp. {{ item.product_price * item.purchase_qty }}</div>
+                <div
+                  class="loopProduct"
+                  v-for="(item, index) in cart"
+                  :key="index"
+                >
+                  <div class="ordered">
+                    {{ item.product_name }} x{{ item.purchase_qty }}
+                  </div>
+                  <div class="ordered">
+                    Rp. {{ item.product_price * item.purchase_qty }}
+                  </div>
                 </div>
               </div>
               <div class="secondHalfRow">
                 <div class="ppns">PPn 10%</div>
-                <div class="ppnPrice">Rp. {{ computedSum * 0.1 }}</div>
+                <div class="ppnPrice">Rp. {{ totals * 0.1 }}</div>
               </div>
               <div class="thirdRow">
-                <div class="subTotal">Total: Rp. {{ histories.history_subtotal }}</div>
+                <div class="subTotal">
+                  Total: Rp. {{ histories.history_subtotal }}
+                </div>
               </div>
               <div class="fourthRow">
                 <div class="payment">Payment: Cash</div>
               </div>
               <div class="fifthRow">
-                <b-button class="buttonPrint" variant="success" @click="deleteEventAll()">Print</b-button>
+                <b-button
+                  class="buttonPrint"
+                  variant="success"
+                  @click="deleteEventAll()"
+                  >Print</b-button
+                >
               </div>
               <div class="sixthRow">
                 <h6>Or</h6>
@@ -83,13 +105,19 @@
                   class="buttonSendEmail"
                   variant="primary"
                   @click="deleteEventAll()"
-                >Send Email</b-button>
+                  >Send Email</b-button
+                >
               </div>
             </div>
           </b-modal>
         </div>
         <div class="cancelbutton">
-          <b-button type="submit" class="btn-secondary" @click="deleteEventAll()">Cancel</b-button>
+          <b-button
+            type="submit"
+            class="btn-secondary"
+            @click="deleteEventAll()"
+            >Cancel</b-button
+          >
         </div>
       </div>
     </div>
@@ -104,77 +132,51 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'Aside',
   data() {
-    return {}
+    return {
+      histories: []
+    }
   },
   computed: {
     ...mapGetters({
-      cart: 'getCart'
-    }),
-    computedSum() {
-      const sums = this.cart.map((value) => {
-        return value.purchase_qty * value.product_price
-      })
-      return sums.reduce((a, b) => a + b)
-    },
-    incrementCount() {
-      return this.cart.length
-    }
+      cart: 'getCart',
+      totals: 'computedSum'
+    })
   },
   methods: {
-    ...mapMutations(['addToCarts']),
-    checkCart(data) {
-      return this.cart.some((item) => item.product_id === data.product_id)
-    },
-    deleteEvent(data) {
-      const indexProduct = this.cart.find(
-        (value) => value.product_id === data.product_id
-      )
-      const indexId = this.cart.indexOf(indexProduct)
-      this.cart.splice(indexId, 1)
-    },
+    ...mapMutations(['addToCarts', 'incrementQty', 'decrementQty']),
+    ...mapActions(['postOrder']),
     deleteEventAll() {
       this.cart.splice(0, this.cart.length)
     },
-    incrementQty(data) {
-      const incrementData = this.cart.find(
-        (value) => value.product_id === data.product_id
-      )
-      incrementData.purchase_qty += 1
-    },
-    decrementQty(data) {
-      const decrementData = this.cart.find(
-        (value) => value.product_id === data.product_id
-      )
-      decrementData.purchase_qty -= 1
-    },
-    // addToCart(data) {
-    //   const setCart = {
-    //     product_id: data.product_id,
-    //     purchase_qty: 1,
-    //     product_name: data.product_name,
-    //     product_price: data.product_price
-    //   }
-    //   this.cart = [...this.cart, setCart]
-    // },
-    postOrder() {
-      this.checkout = { orders: this.cart }
-      axios
-        .post('http://127.0.0.1:3001/purchase', this.checkout)
-        .then((response) => {
-          this.histories = response.data.data
-          this.alert = true
-          this.isMsg = response.data.msg
-          console.log(this.histories)
+    orderPost() {
+      const data = { orders: this.cart }
+      this.postOrder(data)
+        .then(response => {
+          this.histories = response.data
+          console.log(response)
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error)
         })
     }
+    // postOrder() {
+    //   const order = { orders: this.cart }
+    //   axios
+    //     .post('http://127.0.0.1:3001/purchase', order)
+    //     .then(response => {
+    //       this.histories = response.data.data
+    //       // this.alert = true
+    //       // this.isMsg = response.data.msg
+    //       console.log(this.histories)
+    //     })
+    //     .catch(error => {
+    //       console.log(error)
+    //     })
+    // }
   }
 }
 </script>

@@ -1,4 +1,4 @@
-// import axios from 'axios'
+import axios from 'axios'
 
 export default {
   state: {
@@ -25,12 +25,43 @@ export default {
       } else {
         state.cart = [...state.cart, setCart]
       }
+    },
+    incrementQty(state, payload) {
+      const incrementData = state.cart.find(
+        value => value.product_id === payload.product_id
+      )
+      incrementData.purchase_qty += 1
+    },
+    decrementQty(state, payload) {
+      const decrementData = state.cart.find(
+        value => value.product_id === payload.product_id
+      )
+      decrementData.purchase_qty -= 1
     }
   },
-  actions: {},
+  actions: {
+    postOrder(context, payload) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('http://127.0.0.1:3001/purchase', payload)
+          .then(response => {
+            resolve(response.data)
+          })
+          .catch(error => {
+            reject(error.response)
+          })
+      })
+    }
+  },
   getters: {
     getCart(state) {
       return state.cart
+    },
+    computedSum(state) {
+      const sums = state.cart.map(value => {
+        return value.purchase_qty * value.product_price
+      })
+      return sums.reduce((a, b) => a + b)
     }
   }
 }

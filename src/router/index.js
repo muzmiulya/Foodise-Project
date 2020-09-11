@@ -8,6 +8,7 @@ import History from '../views/History.vue'
 import Login from '../views/auth/Login.vue'
 import store from '../store/index'
 import Product from '../views/main/Product.vue'
+import User from '../views/auth/User.vue'
 
 Vue.use(VueRouter)
 
@@ -52,6 +53,12 @@ const routes = [
     path: '/product',
     name: 'Produt',
     component: Product,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/user',
+    name: 'User',
+    component: User,
     meta: { requiresAuth: true }
   }
 ]

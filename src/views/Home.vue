@@ -18,14 +18,13 @@
                 <h2 v-show="!isSearch">Foodsie</h2>
                 <b-container v-show="isSearch">
                   <b-row>
-                    <form></form>
                     <b-col xl="12">
                       <b-form-input
                         type="search"
-                        v-model="search"
+                        v-model="searching"
                         v-show="isSearch"
                         placeholder="Search Product"
-                        v-on:change="handleSearch"
+                        @change="handleSearch"
                         class="searchProduct"
                       ></b-form-input>
                     </b-col>
@@ -34,7 +33,11 @@
               </div>
             </b-col>
             <b-col class="searchButton" xl lg="2" md="2" sm="2" cols="3">
-              <b-button class="buttonSearch" type="reset" @click="isSearch = !isSearch">
+              <b-button
+                class="buttonSearch"
+                type="reset"
+                @click="isSearch = !isSearch"
+              >
                 <img alt="Vue search" src="../assets/2.png" />
               </b-button>
             </b-col>
@@ -42,11 +45,9 @@
         </b-col>
         <b-col class="myCart" xl="4" lg="4" md="4" sm="12">
           Cart
-          <span class="badge badge-pill badge-primary">
-            {{
+          <span class="badge badge-pill badge-primary">{{
             incrementCount
-            }}
-          </span>
+          }}</span>
         </b-col>
       </b-row>
       <b-row>
@@ -66,11 +67,22 @@
                     label-for="sortBySelect"
                     class="mb-0"
                   >
-                    <b-form-select v-model="sort" id="sortBySelect" size="sm" @change="handleSort">
-                      <b-form-select-option value>-- none --</b-form-select-option>
+                    <b-form-select
+                      v-model="defaultSort"
+                      id="sortBySelect"
+                      size="sm"
+                      @change="handleSort"
+                    >
+                      <b-form-select-option value
+                        >-- none --</b-form-select-option
+                      >
                       <b-form-select-option-group label="Product Name">
-                        <b-form-select-option value="product_name">Name (A-Z)</b-form-select-option>
-                        <b-form-select-option value="product_name DESC">Name (Z-A)</b-form-select-option>
+                        <b-form-select-option value="product_name"
+                          >Name (A-Z)</b-form-select-option
+                        >
+                        <b-form-select-option value="product_name DESC"
+                          >Name (Z-A)</b-form-select-option
+                        >
                       </b-form-select-option-group>
                       <b-form-select-option-group label="Category">
                         <option value="category_id">Food</option>
@@ -126,7 +138,11 @@
                         required
                       ></b-form-file>
                       <br />
-                      <b-form-select v-model="form.product_status" size="sm" required>
+                      <b-form-select
+                        v-model="form.product_status"
+                        size="sm"
+                        required
+                      >
                         <option disabled value selected>Product Status</option>
                         <option value="1">Active</option>
                         <option value="0">Not-Active</option>
@@ -137,7 +153,12 @@
                         size="sm"
                         required
                       ></b-form-select>
-                      <b-button type="submit" @click="patchProduct()">Update</b-button>
+                      <b-button
+                        :disabled="isDisabled"
+                        type="submit"
+                        @click="patchProduct()"
+                        >Update</b-button
+                      >
                     </form>
                   </b-container>
                 </b-modal>
@@ -158,13 +179,15 @@
                       pill
                       variant="warning"
                       @click="$bvModal.hide('modal-delete')"
-                    >Cancel</b-button>
+                      >Cancel</b-button
+                    >
                     <b-button
                       class="buttonYesDel"
                       pill
                       variant="danger"
                       @click="deleteProduct(), $bvModal.hide('modal-delete')"
-                    >Yes</b-button>
+                      >Yes</b-button
+                    >
                   </b-container>
                 </b-modal>
                 <b-row>
@@ -189,17 +212,20 @@
                     >
                       <b-card-body style="padding:0;">
                         <div v-if="checkCart(item)" class="select-image">
-                          <img class="icon-select" alt="Vue tick" src="../assets/tick2.png" />
+                          <img
+                            class="icon-select"
+                            alt="Vue tick"
+                            src="../assets/tick2.png"
+                          />
                         </div>
                         <b-card-title
                           class="cardTitlePrice"
                           style="margin-bottom: 0"
-                        >{{ item.product_name }}</b-card-title>
-                        <b-card-text class="cardTitlePrice">
-                          {{
+                          >{{ item.product_name }}</b-card-title
+                        >
+                        <b-card-text class="cardTitlePrice">{{
                           item.product_price
-                          }}
-                        </b-card-text>
+                        }}</b-card-text>
                         <b-button
                           pill
                           v-show="isHiding(item)"
@@ -249,7 +275,7 @@
               <b-col xl="12" class="paginations">
                 <div class="d-flex justify-content-center">
                   <b-pagination
-                    v-model="page"
+                    v-model="currentPage"
                     :total-rows="rows"
                     :per-page="limit"
                     @change="handlePageChange"
@@ -260,8 +286,8 @@
             </b-row>
           </div>
         </b-col>
-        <!-- <Aside></Aside> -->
-        <b-col class="yourcart" md="4">
+        <Aside></Aside>
+        <!-- <b-col class="yourcart" md="4">
           <div class="theGrid" v-if="cart.length > 0">
             <div class="gridbox1">
               <div class="orderboxes" v-for="(item, index) in cart" :key="index">
@@ -370,26 +396,27 @@
               <p>Please add some items from the menu</p>
             </b-container>
           </div>
-        </b-col>
+        </b-col>-->
       </b-row>
     </b-container>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import Navbar from '../components/_base/Navbar'
-// import Aside from '../components/_base/Aside'
+import Aside from '../components/_base/Aside'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'Home',
   data() {
     return {
       // cart: [],
-      // page: 1,
+      currentPage: 1,
+      // search: '',
       // limit: 9,
-      // sort: '',
-      search: '',
+      defaultSort: '',
+      searching: '',
       disabled: true,
       form: {
         category_id: '',
@@ -398,7 +425,7 @@ export default {
         product_picture: {},
         product_status: ''
       },
-      checkout: {},
+      // checkout: {},
       pages1: [
         { text: '1', value: '1' },
         { text: '2', value: '2' },
@@ -410,22 +437,22 @@ export default {
       isMsgDel: '',
       isUpdate: false,
       isSearch: false,
-      isCheck: false,
+      isCheck: false
       // totalRows: null,
       // product_id: '',
-      // products: [],
+      // products: []
       // category: [],
-      histories: []
+      // histories: []
     }
   },
 
   components: {
-    Navbar
-    // Aside
+    Navbar,
+    Aside
   },
   created() {
     this.getProducts()
-    this.search_product()
+    // this.searchProduct()
     this.getCategory()
   },
 
@@ -435,9 +462,11 @@ export default {
       page: 'getPage',
       sort: 'getSort',
       rows: 'getTotalRows',
+      search: 'getSearch',
       products: 'getProduct',
       category: 'getCategory',
-      cart: 'getCart'
+      cart: 'getCart',
+      user: 'setUser'
     }),
     isDisabled() {
       return (
@@ -448,12 +477,12 @@ export default {
         this.form.category_id <= 0
       )
     },
-    computedSum() {
-      const sums = this.cart.map((value) => {
-        return value.purchase_qty * value.product_price
-      })
-      return sums.reduce((a, b) => a + b)
-    },
+    // computedSum() {
+    //   const sums = this.cart.map(value => {
+    //     return value.purchase_qty * value.product_price
+    //   })
+    //   return sums.reduce((a, b) => a + b)
+    // },
     incrementCount() {
       return this.cart.length
     }
@@ -464,17 +493,18 @@ export default {
       'getProducts',
       'getCategory',
       'updateProducts',
-      'deleteProducts'
+      'deleteProducts',
+      'searchProduct'
     ]),
-    ...mapMutations(['setPage', 'addToCarts']),
+    ...mapMutations(['setPage', 'setSort', 'setSearch', 'addToCarts']),
     checkCart(data) {
-      return this.cart.some((item) => item.product_id === data.product_id)
+      return this.cart.some(item => item.product_id === data.product_id)
     },
     alertClose() {
       this.alert = false
     },
     isHiding(data) {
-      if (this.cart.some((item) => item.product_id === data.product_id)) {
+      if (this.cart.some(item => item.product_id === data.product_id)) {
         return false
       } else {
         return true
@@ -482,55 +512,58 @@ export default {
     },
     deleteEvent(data) {
       const indexProduct = this.cart.find(
-        (value) => value.product_id === data.product_id
+        value => value.product_id === data.product_id
       )
       const indexId = this.cart.indexOf(indexProduct)
       this.cart.splice(indexId, 1)
     },
-    deleteEventAll() {
-      this.cart.splice(0, this.cart.length)
-    },
+    // deleteEventAll() {
+    //   this.cart.splice(0, this.cart.length)
+    // },
     handleFile(event) {
       this.form.product_picture = event.target.files[0]
       console.log(event.target.files[0])
     },
     handlePageChange(event) {
       this.$router.push(`?page=${event}`)
-      // this.page = event
+      // console.log(event)
       this.setPage(event)
       this.getProducts()
     },
     handleSearch(event) {
       this.$router.push(`?keyword=${event}`)
-      this.search = event
-      this.search_product()
+      this.setSearch(event)
+      // this.search = event
+      this.searchProduct()
     },
     handleSort(event) {
       this.$router.push(`?sort=${event}`)
-      this.sort = event
+      this.setSort(event)
+      // this.sort = event
       this.getProducts()
     },
-    incrementQty(data) {
-      const incrementData = this.cart.find(
-        (value) => value.product_id === data.product_id
-      )
-      incrementData.purchase_qty += 1
-    },
-    decrementQty(data) {
-      const decrementData = this.cart.find(
-        (value) => value.product_id === data.product_id
-      )
-      decrementData.purchase_qty -= 1
-    },
-    addToCart(data) {
-      const setCart = {
-        product_id: data.product_id,
-        purchase_qty: 1,
-        product_name: data.product_name,
-        product_price: data.product_price
-      }
-      this.cart = [...this.cart, setCart]
-    },
+
+    // incrementQty(data) {
+    //   const incrementData = this.cart.find(
+    //     (value) => value.product_id === data.product_id
+    //   )
+    //   incrementData.purchase_qty += 1
+    // },
+    // decrementQty(data) {
+    //   const decrementData = this.cart.find(
+    //     (value) => value.product_id === data.product_id
+    //   )
+    //   decrementData.purchase_qty -= 1
+    // },
+    // addToCart(data) {
+    //   const setCart = {
+    //     product_id: data.product_id,
+    //     purchase_qty: 1,
+    //     product_name: data.product_name,
+    //     product_price: data.product_price
+    //   }
+    //   this.cart = [...this.cart, setCart]
+    // },
     // addProduct(event) {
     //   console.log(event)
     //   axios
@@ -558,20 +591,21 @@ export default {
     //       console.log(error)
     //     })
     // },
-    search_product(event) {
-      axios
-        .get(
-          `http://127.0.0.1:3001/product/search/name?search=${this.search}&limit=${this.limit}`
-        )
-        .then((response) => {
-          // this.products = response.data.data
-          this.totalRows2 = response.data.data.length
-          // console.log(this.products)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
+    // searchProduct(event) {
+    //   axios
+    //     .get(
+    //       `http://127.0.0.1:3001/product/search/name?search=${this.search}&limit=${this.limit}`
+    //     )
+    //     .then(response => {
+    //       // this.products = response.data.data
+    //       this.totalRows2 = response.data.data.length
+    //       console.log(response)
+    //       // console.log(this.products)
+    //     })
+    //     .catch(error => {
+    //       console.log(error)
+    //     })
+    // },
     setProduct(data) {
       this.form = {
         product_name: data.product_name,
@@ -621,12 +655,12 @@ export default {
       }
       this.isUpdate = false
       this.updateProducts(setData)
-        .then((response) => {
+        .then(response => {
           this.alert = true
           this.isMsg = response.msg
           this.getProducts()
         })
-        .catch((error) => {
+        .catch(error => {
           this.alert = true
           this.isMsg = error.data.msg
         })
@@ -657,30 +691,30 @@ export default {
       }
       this.isUpdate = false
       this.deleteProducts(setData)
-        .then((response) => {
+        .then(response => {
           this.alertDel = true
           this.isMsgDel = response.msg
           this.getProducts()
         })
-        .catch((error) => {
+        .catch(error => {
           this.alertDel = true
           this.isMsgDel = error.data.msg
         })
-    },
-    postOrder() {
-      this.checkout = { orders: this.cart }
-      axios
-        .post('http://127.0.0.1:3001/purchase', this.checkout)
-        .then((response) => {
-          this.histories = response.data.data
-          this.alert = true
-          this.isMsg = response.data.msg
-          console.log(this.histories)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
     }
+    // postOrder() {
+    //   this.checkout = { orders: this.cart }
+    //   axios
+    //     .post('http://127.0.0.1:3001/purchase', this.checkout)
+    //     .then((response) => {
+    //       this.histories = response.data.data
+    //       this.alert = true
+    //       this.isMsg = response.data.msg
+    //       console.log(this.histories)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // }
     // getCategory() {
     //   axios
     //     .get('http://127.0.0.1:3001/category')
