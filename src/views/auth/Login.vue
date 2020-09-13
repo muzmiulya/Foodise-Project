@@ -18,7 +18,12 @@
                 <i class="far fa-envelope"></i>
               </span>
             </div>
-            <b-form-input type="email" v-model="form.user_email" placeholder="Email..." required></b-form-input>
+            <b-form-input
+              type="email"
+              v-model="form.user_email"
+              placeholder="Email..."
+              required
+            ></b-form-input>
           </b-input-group>
           <br />
           <b-input-group>
@@ -35,7 +40,9 @@
             ></b-form-input>
           </b-input-group>
           <br />
-          <b-button class="btn-block" variant="primary" @click="onSubmit()">Log in</b-button>
+          <b-button class="btn-block" variant="primary" @click="onSubmit()"
+            >Log in</b-button
+          >
           <br />
           <b-button class="btn-block" type="reset">Reset</b-button>
         </form>
@@ -45,8 +52,9 @@
           class="buttonLogSign btn-block"
           variant="light"
           type="button"
-          @click="isShown=!isShown"
-        >Sign up</b-button>
+          @click="isShown = !isShown"
+          >Sign up</b-button
+        >
       </b-card>
       <b-card class="align-content-center" v-show="isShown">
         <b-alert v-bind:show="alert">{{ isMsg }}</b-alert>
@@ -59,7 +67,12 @@
                 <i class="fa fa-user" aria-hidden="true"></i>
               </span>
             </div>
-            <b-form-input type="text" v-model="formSignUp.user_name" placeholder="User name..."></b-form-input>
+            <b-form-input
+              type="text"
+              v-model="formSignUp.user_name"
+              placeholder="User name..."
+              required
+            ></b-form-input>
           </b-input-group>
           <br />
           <b-input-group>
@@ -68,7 +81,12 @@
                 <i class="far fa-envelope"></i>
               </span>
             </div>
-            <b-form-input type="email" v-model="formSignUp.user_email" placeholder="Email..."></b-form-input>
+            <b-form-input
+              type="email"
+              v-model="formSignUp.user_email"
+              placeholder="Email..."
+              required
+            ></b-form-input>
           </b-input-group>
           <br />
           <b-input-group>
@@ -81,12 +99,21 @@
               type="password"
               v-model="formSignUp.user_password"
               placeholder="Password..."
+              required
             ></b-form-input>
           </b-input-group>
           <br />
-          <b-button class="btn-block" variant="primary" @click="addUser()">Sign up</b-button>
+          <b-button
+            :disabled="isDisabled"
+            class="btn-block"
+            variant="primary"
+            @click="addUser()"
+            >Sign up</b-button
+          >
           <br />
-          <b-button class="btn-block" type="reset" @click="onResetSignUp()">Reset</b-button>
+          <b-button class="btn-block" type="reset" @click="onResetSignUp()"
+            >Reset</b-button
+          >
         </form>
         <hr />
         <h6>Already have an account? Log in</h6>
@@ -94,8 +121,9 @@
           class="buttonLogSign btn-block"
           variant="light"
           type="button"
-          @click="isShown=!isShown, onResetSignUp()"
-        >Log in</b-button>
+          @click=";(isShown = !isShown), onResetSignUp()"
+          >Log in</b-button
+        >
       </b-card>
     </div>
     <!-- [1] [2] -->
@@ -105,7 +133,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'Login',
   data() {
@@ -125,27 +153,26 @@ export default {
     }
   },
   computed: {
-    //   [1]
-    // dataName() {
-    //   return this.$store.state.name
-    // }
-    // [2]
-    // ...mapState({ dataName: 'name' })
-    // [3]
-    ...mapState(['name'])
+    isDisabled() {
+      return (
+        this.formSignUp.user_email <= 0 ||
+        this.formSignUp.user_password <= 0 ||
+        this.formSignUp.user_name <= 0
+      )
+    }
   },
   methods: {
     ...mapActions(['login', 'addUsers']),
     onSubmit() {
       this.login(this.form)
-        .then((result) => {
+        .then(result => {
           console.log(result)
           this.$router.push('/')
         })
-        .catch((error) => {
+        .catch(error => {
           // this.alert = true
           // this.isMsg = error.data.msg
-          alert(error.data.msg)
+          alert(error)
           // console.log(error)
         })
     },
@@ -166,12 +193,12 @@ export default {
     },
     addUser() {
       this.addUsers(this.formSignUp)
-        .then((response) => {
+        .then(response => {
           this.alert = true
           this.isMsg = response.msg
           this.addUsers()
         })
-        .catch((error) => {
+        .catch(error => {
           this.alert = true
           this.isMsg = error.data.msg
         })

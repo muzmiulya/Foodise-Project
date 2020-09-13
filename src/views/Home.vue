@@ -7,7 +7,8 @@
         integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ"
         crossorigin="anonymous"
       />
-      <b-row>
+      <Header :increments="incrementCount"></Header>
+      <!-- <b-row>
         <b-col class="firstColumn" xl="8" lg="8" md="8" sm="12" cols="12">
           <b-row>
             <b-col class="homeButton" xl lg md sm cols="3">
@@ -49,7 +50,7 @@
             incrementCount
           }}</span>
         </b-col>
-      </b-row>
+      </b-row>-->
       <b-row>
         <Navbar></Navbar>
         <b-col class="gridbackground" md="7">
@@ -135,7 +136,6 @@
                         @change="handleFile"
                         placeholder="Choose a file..."
                         drop-placeholder="Drop file here..."
-                        required
                       ></b-form-file>
                       <br />
                       <b-form-select
@@ -202,7 +202,6 @@
                     :key="index"
                   >
                     <b-card
-                      v-bind:img-src="require('../assets/7.jpg')"
                       img-alt="Image"
                       img-top
                       tag="article"
@@ -211,6 +210,18 @@
                       style="background-color:transparent; border: none; position: relative;"
                     >
                       <b-card-body style="padding:0;">
+                        <div class="productImage">
+                          <b-img
+                            rounded="top"
+                            class="images"
+                            :src="
+                              'http://127.0.0.1:3001/' + item.product_picture
+                            "
+                            alt="Fluid image"
+                            fluid
+                          />
+                        </div>
+
                         <div v-if="checkCart(item)" class="select-image">
                           <img
                             class="icon-select"
@@ -223,9 +234,9 @@
                           style="margin-bottom: 0"
                           >{{ item.product_name }}</b-card-title
                         >
-                        <b-card-text class="cardTitlePrice">{{
-                          item.product_price
-                        }}</b-card-text>
+                        <b-card-text class="cardTitlePrice">
+                          {{ item.product_price }}
+                        </b-card-text>
                         <b-button
                           pill
                           v-show="isHiding(item)"
@@ -247,6 +258,7 @@
                         <b-button
                           pill
                           v-show="isHiding(item)"
+                          v-if="user.user_role === 1"
                           variant="success"
                           style="width:33%"
                           v-b-modal.modal-update
@@ -257,6 +269,7 @@
                         <b-button
                           pill
                           v-show="isHiding(item)"
+                          v-if="user.user_role === 1"
                           variant="danger"
                           style="width:33%"
                           v-b-modal.modal-delete
@@ -404,6 +417,7 @@
 
 <script>
 // import axios from 'axios'
+import Header from '../components/_base/Header'
 import Navbar from '../components/_base/Navbar'
 import Aside from '../components/_base/Aside'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
@@ -416,7 +430,7 @@ export default {
       // search: '',
       // limit: 9,
       defaultSort: '',
-      searching: '',
+      // searching: '',
       disabled: true,
       form: {
         category_id: '',
@@ -436,7 +450,7 @@ export default {
       isMsg: '',
       isMsgDel: '',
       isUpdate: false,
-      isSearch: false,
+      // isSearch: false,
       isCheck: false
       // totalRows: null,
       // product_id: '',
@@ -447,6 +461,7 @@ export default {
   },
 
   components: {
+    Header,
     Navbar,
     Aside
   },
@@ -455,6 +470,9 @@ export default {
     // this.searchProduct()
     this.getCategory()
   },
+  // updated() {
+  //   this.searchProduct()
+  // },
 
   computed: {
     ...mapGetters({
@@ -472,7 +490,6 @@ export default {
       return (
         this.form.product_name <= 0 ||
         this.form.product_price <= 0 ||
-        this.form.product_picture.length <= 0 ||
         this.form.product_status <= 0 ||
         this.form.category_id <= 0
       )
@@ -530,12 +547,12 @@ export default {
       this.setPage(event)
       this.getProducts()
     },
-    handleSearch(event) {
-      this.$router.push(`?keyword=${event}`)
-      this.setSearch(event)
-      // this.search = event
-      this.searchProduct()
-    },
+    // handleSearch(event) {
+    //   this.$router.push(`?keyword=${event}`)
+    //   this.setSearch(event)
+    //   // this.search = event
+    //   this.searchProduct()
+    // },
     handleSort(event) {
       this.$router.push(`?sort=${event}`)
       this.setSort(event)
@@ -614,7 +631,6 @@ export default {
         product_picture: data.product_picture,
         product_status: data.product_status
       }
-      this.isUpdate = true
       this.product_id = data.product_id
     },
     setDelete(data) {
@@ -653,6 +669,7 @@ export default {
         product_id: this.product_id,
         form: data
       }
+      // console.log(setData)
       this.isUpdate = false
       this.updateProducts(setData)
         .then(response => {

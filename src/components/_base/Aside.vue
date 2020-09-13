@@ -4,7 +4,10 @@
       <div class="gridbox1">
         <div class="orderboxes" v-for="(item, index) in cart" :key="index">
           <div class="item-a">
-            <img alt="Vue pictures" src="../../assets/7.jpg" />
+            <img
+              alt="Vue pictures"
+              :src="'http://127.0.0.1:3001/' + item.product_picture"
+            />
           </div>
           <div class="item-b">
             <p>{{ item.product_name }}</p>
@@ -124,7 +127,7 @@
     <div v-else>
       <b-container class="cartInside">
         <img alt="Vue cart" src="../../assets/6.png" />
-        <h3>Your cart is empty</h3>
+        <h3 v-orange>Your cart is empty</h3>
         <p>Please add some items from the menu</p>
       </b-container>
     </div>
@@ -157,7 +160,7 @@ export default {
       this.postOrder(data)
         .then(response => {
           this.histories = response.data
-          console.log(response)
+          // console.log(response)
         })
         .catch(error => {
           console.log(error)

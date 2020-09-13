@@ -10,7 +10,8 @@ export default {
         product_id: payload.product_id,
         purchase_qty: 1,
         product_name: payload.product_name,
-        product_price: payload.product_price
+        product_price: payload.product_price,
+        product_picture: payload.product_picture
       }
       const fixedData = [...state.cart, setCart]
       const addedItem = fixedData.find(

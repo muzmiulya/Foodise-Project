@@ -15,6 +15,10 @@ Vue.use(IconsPlugin)
 
 Vue.config.productionTip = false
 
+Vue.directive('orange', function(el, binding, vnode) {
+  el.style.color = 'orange'
+})
+
 new Vue({
   router,
   store,

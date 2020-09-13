@@ -28,6 +28,7 @@
       <b-col class="add homeSide" xl="12">
         <div>
           <b-button
+            v-if="user.user_role === 1"
             v-b-tooltip.hover.top="'Add Product'"
             class="addButton"
             v-b-modal.modal-1
@@ -162,7 +163,10 @@
     <b-row>
       <b-col class="history homeSide" xl="12">
         <router-link to="/user" vslot="{ route, navigate}">
-          <b-button v-b-tooltip.hover.top="'User Controller'">
+          <b-button
+            v-if="user.user_role === 1"
+            v-b-tooltip.hover.top="'User Controller'"
+          >
             <img alt="Vue history" src="../../assets/users.png" />
           </b-button>
         </router-link>
@@ -173,6 +177,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+// import disabledMixin from '../../mixins/disabledMixin'
 export default {
   name: 'Navbar',
   data() {
@@ -199,13 +204,13 @@ export default {
   },
   computed: {
     ...mapGetters({
-      category: 'getCategory'
+      category: 'getCategory',
+      user: 'setUser'
     }),
     isDisabled() {
       return (
         this.form.product_name <= 0 ||
         this.form.product_price <= 0 ||
-        this.form.product_picture === {} ||
         this.form.product_status <= 0 ||
         this.form.category_id <= 0
       )
@@ -214,7 +219,7 @@ export default {
       return this.form2.category_name <= 0 || this.form2.category_status <= 0
     }
   },
-
+  // mixins: [disabledMixin],
   methods: {
     ...mapActions([
       'addProducts',

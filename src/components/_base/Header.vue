@@ -14,7 +14,7 @@
                 <b-col xl="12">
                   <b-form-input
                     type="search"
-                    v-model="search"
+                    v-model="searching"
                     v-show="isSearch"
                     placeholder="Search Product"
                     v-on:change="handleSearch"
@@ -38,31 +38,35 @@
     </b-col>
     <b-col class="myCart" xl="4" lg="4" md="4" sm="12">
       Cart
-      <span class="badge badge-pill badge-primary">
-        {{ incrementCount }}
-      </span>
+      <span class="badge badge-pill badge-primary">{{ increments }}</span>
     </b-col>
   </b-row>
 </template>
 
 <script>
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'Header',
+  props: ['increments'],
   data() {
     return {
-      search: ''
+      searching: '',
+      isSearch: false
     }
   },
-  watch: {
-    search: function() {
-      console.log(this.search)
-    }
+  computed: {
+    ...mapGetters({
+      search: 'getSearch'
+    })
   },
   methods: {
-    search_product() {
-      const searched = this.search
-      console.log(searched)
-      this.$emit('search_product', searched)
+    ...mapActions(['getProducts', 'searchProduct']),
+    ...mapMutations(['setSearch']),
+    handleSearch(event) {
+      this.$router.push(`?keyword=${event}`)
+      this.setSearch(event)
+      // this.search = event
+      this.searchProduct()
     }
   }
 }

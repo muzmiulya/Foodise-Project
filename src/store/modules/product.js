@@ -12,9 +12,8 @@ export default {
   },
   mutations: {
     setProduct(state, payload) {
-      state.products = payload.data
-      state.totalRows = payload.pagination.totalData
-      //   console.log(state.totalRows)
+      state.products = payload
+      // state.totalRows = payload.pagination.totalData
     },
     setSearch(state, payload) {
       state.search = payload
@@ -24,6 +23,9 @@ export default {
     },
     setSort(state, payload) {
       state.sort = payload
+    },
+    setTlRows(state, payload) {
+      state.totalRows = payload
     }
   },
   actions: {
@@ -33,7 +35,8 @@ export default {
           `http://127.0.0.1:3001/product?sort=${context.state.sort}&page=${context.state.page}&limit=${context.state.limit}`
         )
         .then(response => {
-          context.commit('setProduct', response.data)
+          context.commit('setProduct', response.data.data)
+          context.commit('setTlRows', response.data.pagination.totalData)
         })
         .catch(error => {
           console.log(error)
@@ -45,10 +48,11 @@ export default {
           `http://127.0.0.1:3001/product/search/name?search=${context.state.search}&page=${context.state.page}&limit=${context.state.limit}`
         )
         .then(response => {
-          //   console.log(response)
-          context.commit('setProduct', response.data)
-          //   console.log(context.state.search)
-          //   console.log(context.state.limit)
+          console.log(response.data.pagination.totalData)
+          context.commit('setProduct', response.data.data)
+          context.commit('setTlRows', response.data.pagination.totalData)
+          // const totalRows = response.data.length
+          // console.log(response.data)
         })
         .catch(error => {
           console.log(error)
@@ -67,6 +71,7 @@ export default {
       })
     },
     updateProducts(context, payload) {
+      // console.log(payload)
       return new Promise((resolve, reject) => {
         axios
           .patch(

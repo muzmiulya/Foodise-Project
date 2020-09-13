@@ -37,7 +37,7 @@
               <div class="month">
                 <b-form>
                   <b-form-select
-                    v-model="month"
+                    v-model="months"
                     text="Month"
                     :options="monthoptions"
                     @change="handleChart"
@@ -60,7 +60,7 @@
               <div class="today">
                 <div>
                   <b-form-select
-                    v-model="date"
+                    v-model="dateNow"
                     text="Date"
                     :options="options"
                     @change="handleTable"
@@ -80,7 +80,7 @@
                 <div class="paginations">
                   <b-pagination
                     v-model="currentPage"
-                    :total-rows="rows"
+                    :total-rows="rowes"
                     :per-page="perPage"
                     size="md"
                     class="my-0"
@@ -97,13 +97,14 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import Navbar from '../components/_base/Navbar'
+import { mapActions, mapMutations, mapGetters } from 'vuex'
 export default {
   name: 'History',
   data() {
     return {
-      date: 'date',
+      dateNow: 'date',
       interval: 0,
       fields: [
         { key: 'history_invoices', label: 'INVOICES' },
@@ -113,7 +114,7 @@ export default {
         { key: 'history_subtotal', label: 'AMOUNT' }
       ],
       items: [],
-      month: 'MONTH(NOW())',
+      months: 'MONTH(NOW())',
       // datas: [
       //   {
       //     name: 'This Month',
@@ -186,12 +187,7 @@ export default {
       //     }
       //   }
       // ],
-      datas: {},
-      forms: {
-        history_invoices: '',
-        history_created_at: '',
-        history_subtotal: ''
-      },
+      // datas: {},
       options: [
         { value: 'date', text: 'Today' },
         { value: 'week', text: 'This Week' },
@@ -212,14 +208,13 @@ export default {
         { value: '11', text: 'November' },
         { value: '12', text: 'December' }
       ],
-      history_id: '',
-      currentPage: 1,
-      perPage: 5,
-      totalRows: null,
-      todayIncome: [],
-      orderCount: [],
-      perDay: [],
-      yearlyIncome: []
+      currentPage: 1
+      // perPage: 5,
+      // totalRows: null,
+      // todayIncome: [],
+      // orderCount: [],
+      // perDay: []
+      // yearlyIncome: []
     }
   },
 
@@ -227,8 +222,19 @@ export default {
     Navbar
   },
   computed: {
-    rows() {
-      return this.totalRows
+    ...mapGetters({
+      todayIncome: 'getIncome',
+      orderCount: 'getCount',
+      yearlyIncome: 'getYearly',
+      month: 'getMonthly',
+      datas: 'getDatas',
+      date: 'getDate',
+      perDay: 'getPerDay',
+      totalRow: 'getRows',
+      perPage: 'getPerPage'
+    }),
+    rowes() {
+      return this.totalRow
     }
   },
   created() {
@@ -240,83 +246,94 @@ export default {
   },
 
   methods: {
+    ...mapActions([
+      'getIncomeToday',
+      'getOrderCount',
+      'getIncomeYearly',
+      'getChartMonthly',
+      'getHistoryPerDay'
+    ]),
+    ...mapMutations(['setMonth', 'setDate', 'setPages']),
     handlePageChange(event) {
-      this.currentPage = event
+      // this.currentPage = event
+      this.setPages(event)
       this.getHistoryPerDay()
     },
-    handleTable() {
+    handleTable(event) {
+      this.setDate(event)
       this.getHistoryPerDay()
     },
-    handleChart() {
+    handleChart(event) {
+      this.setMonth(event)
       this.getChartMonthly()
-    },
-    getHistoryPerDay() {
-      axios
-        .get(`http://127.0.0.1:3001/history/days/days?date=${this.date}`)
-        .then((response) => {
-          const datas = response.data.data.map((value) => {
-            const setData = {
-              cashier: 'Cashier 1',
-              ...value
-            }
-            return setData
-          })
-          this.perDay = datas
-          this.totalRows = response.data.data.length
-          console.log(this.perDay)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
-    getIncomeToday() {
-      axios
-        .get('http://127.0.0.1:3001/history/income/today')
-        .then((response) => {
-          this.todayIncome = response.data.data
-          // this.getIncomeToday()
-          // console.log(this.todayIncome)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
-    getOrderCount() {
-      axios
-        .get('http://127.0.0.1:3001/history/order/count')
-        .then((response) => {
-          this.orderCount = response.data.data
-          // this.getOrderCount()
-          // console.log(this.orderCount)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
-    getIncomeYearly() {
-      axios
-        .get('http://127.0.0.1:3001/history/income/year')
-        .then((response) => {
-          this.yearlyIncome = response.data.data
-          // this.getIncomeYearly()
-          // console.log(this.yearlyIncome)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-    },
-    getChartMonthly() {
-      axios
-        .get(`http://127.0.0.1:3001/history/chart/monthly?months=${this.month}`)
-        .then((response) => {
-          this.datas = response.data.data
-          // this.getChartMonthly()
-          // console.log(this.datas)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
     }
+    // getHistoryPerDay() {
+    //   axios
+    //     .get(`http://127.0.0.1:3001/history/days/days?date=${this.date}`)
+    //     .then((response) => {
+    //       const datas = response.data.data.map((value) => {
+    //         const setData = {
+    //           cashier: 'Cashier 1',
+    //           ...value
+    //         }
+    //         return setData
+    //       })
+    //       this.perDay = datas
+    //       this.totalRows = response.data.data.length
+    //       // console.log(this.perDay)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // }
+    // getIncomeToday() {
+    //   axios
+    //     .get('http://127.0.0.1:3001/history/income/today')
+    //     .then((response) => {
+    //       this.todayIncome = response.data.data
+    //       // this.getIncomeToday()
+    //       // console.log(this.todayIncome)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // },
+    // getOrderCount() {
+    //   axios
+    //     .get('http://127.0.0.1:3001/history/order/count')
+    //     .then((response) => {
+    //       this.orderCount = response.data.data
+    //       // this.getOrderCount()
+    //       // console.log(this.orderCount)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // },
+    // getIncomeYearly() {
+    //   axios
+    //     .get('http://127.0.0.1:3001/history/income/year')
+    //     .then((response) => {
+    //       this.yearlyIncome = response.data.data
+    //       // this.getIncomeYearly()
+    //       // console.log(this.yearlyIncome)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // },
+    // getChartMonthly() {
+    //   axios
+    //     .get(`http://127.0.0.1:3001/history/chart/monthly?months=${this.month}`)
+    //     .then((response) => {
+    //       this.datas = response.data.data
+    //       // this.getChartMonthly()
+    //       // console.log(this.datas)
+    //     })
+    //     .catch((error) => {
+    //       console.log(error)
+    //     })
+    // }
   }
 }
 </script>

@@ -168,6 +168,20 @@
 }
 
 /* Main */
+.productImage {
+  max-width: 100%;
+  height: 200px;
+  /* box-sizing: border-box; */
+}
+.productImage > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  overflow: hidden;
+}
+/* .images {
+  object-fit: cover;
+} */
 .gridbackground {
   background-color: whitesmoke;
   position: relative;
@@ -205,7 +219,7 @@
 .select-image {
   max-width: 100%;
   width: 100%;
-  height: 150px;
+  height: 200px;
   /* border-radius: 10px 10px 0 0; */
   background-color: rgba(0, 0, 0, 0.6);
   position: absolute;
@@ -460,7 +474,7 @@
   }
 }
 @media screen and (max-width: 1250px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 140px;
@@ -474,10 +488,10 @@
     bottom: 65%;
     left: 40%;
     right: 60%;
-  }
+  } */
 }
 @media screen and (max-width: 1200px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 135px;
@@ -491,10 +505,10 @@
     bottom: 65%;
     left: 40%;
     right: 60%;
-  }
+  } */
 }
 @media screen and (max-width: 1150px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 130px;
@@ -508,10 +522,10 @@
     bottom: 65%;
     left: 40%;
     right: 60%;
-  }
+  } */
 }
 @media screen and (max-width: 1100px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 125px;
@@ -525,7 +539,7 @@
     bottom: 65%;
     left: 40%;
     right: 60%;
-  }
+  } */
 }
 @media screen and (max-width: 1060px) {
   .grid-container {
@@ -582,7 +596,7 @@
   .ppn {
     font-size: 13px;
   }
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 120px;
@@ -596,10 +610,10 @@
     bottom: 65%;
     left: 40%;
     right: 60%;
-  }
+  } */
 }
 @media screen and (max-width: 1050px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 110px;
@@ -613,10 +627,10 @@
     bottom: 65%;
     left: 35%;
     right: 65%;
-  }
+  } */
 }
 @media screen and (max-width: 992px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 170px;
@@ -630,10 +644,10 @@
     bottom: 60%;
     left: 40%;
     right: 65%;
-  }
+  } */
 }
 @media screen and (max-width: 950px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 165px;
@@ -647,7 +661,7 @@
     bottom: 60%;
     left: 40%;
     right: 65%;
-  }
+  } */
   .item-b p {
     font-size: 12px;
   }
@@ -664,7 +678,7 @@
   .item-cPrice p {
     font-size: 13px;
   }
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 155px;
@@ -678,10 +692,10 @@
     bottom: 60%;
     left: 40%;
     right: 65%;
-  }
+  } */
 }
 @media screen and (max-width: 850px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 145px;
@@ -695,10 +709,10 @@
     bottom: 60%;
     left: 40%;
     right: 65%;
-  }
+  } */
 }
 @media screen and (max-width: 800px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 135px;
@@ -712,7 +726,7 @@
     bottom: 60%;
     left: 40%;
     right: 65%;
-  }
+  } */
 }
 @media screen and (max-width: 768px) {
   .firstColumn {
@@ -799,7 +813,7 @@
     width: 50px;
     height: auto;
   }
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 160px;
@@ -813,7 +827,7 @@
     bottom: 60%;
     left: 40%;
     right: 65%;
-  }
+  } */
 }
 
 @media screen and (max-width: 576px) {
@@ -876,7 +890,7 @@
   .item-cPrice p {
     font-size: 20px;
   }
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 160px;
@@ -890,10 +904,10 @@
     bottom: 60%;
     left: 40%;
     right: 65%;
-  }
+  } */
 }
 @media screen and (max-width: 500px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 145px;
@@ -907,10 +921,10 @@
     bottom: 60%;
     left: 40%;
     right: 65%;
-  }
+  } */
 }
 @media screen and (max-width: 450px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 130px;
@@ -924,7 +938,7 @@
     bottom: 60%;
     left: 40%;
     right: 65%;
-  }
+  } */
   .item-b p {
     font-size: 13px;
   }
@@ -947,7 +961,7 @@
   }
 }
 @media screen and (max-width: 400px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 115px;
@@ -961,10 +975,10 @@
     bottom: 60%;
     left: 35%;
     right: 65%;
-  }
+  } */
 }
 @media screen and (max-width: 350px) {
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 95px;
@@ -978,7 +992,7 @@
     bottom: 60%;
     left: 40%;
     right: 60%;
-  }
+  } */
 }
 @media screen and (max-width: 330px) {
   .orderboxes {
@@ -1007,7 +1021,7 @@
   .cardTitlePrice {
     font-size: 15px;
   }
-  .select-image {
+  /* .select-image {
     max-width: 100%;
     width: 100%;
     height: 90px;
@@ -1021,39 +1035,39 @@
     bottom: 60%;
     left: 35%;
     right: 55%;
+  } */
+}
+@media screen and (max-width: 300px) {
+  /* .select-image {
+    max-width: 100%;
+    width: 100%;
+    height: 80px;
+    top: 0;
   }
-  @media screen and (max-width: 300px) {
-    .select-image {
-      max-width: 100%;
-      width: 100%;
-      height: 80px;
-      top: 0;
-    }
 
-    .select-image .icon-select {
-      width: 40px;
-      height: 40px;
-      top: 25%;
-      bottom: 60%;
-      left: 35%;
-      right: 55%;
-    }
+  .select-image .icon-select {
+    width: 40px;
+    height: 40px;
+    top: 25%;
+    bottom: 60%;
+    left: 35%;
+    right: 55%;
+  } */
+}
+@media screen and (max-width: 280px) {
+  /* .select-image {
+    max-width: 100%;
+    width: 100%;
+    height: 75px;
+    top: 0;
   }
-  @media screen and (max-width: 280px) {
-    .select-image {
-      max-width: 100%;
-      width: 100%;
-      height: 75px;
-      top: 0;
-    }
 
-    .select-image .icon-select {
-      width: 40px;
-      height: 40px;
-      top: 20%;
-      bottom: 60%;
-      left: 30%;
-      right: 70%;
-    }
-  }
+  .select-image .icon-select {
+    width: 40px;
+    height: 40px;
+    top: 20%;
+    bottom: 60%;
+    left: 30%;
+    right: 70%;
+  } */
 }
