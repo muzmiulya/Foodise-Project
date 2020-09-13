@@ -115,7 +115,7 @@
                 >
                   <b-container>
                     <b-alert v-bind:show="alert">{{ isMsg }}</b-alert>
-                    <form class="formAdd" v-on:submit.prevent="patchProduct">
+                    <form class="formAdd">
                       <b-form-input
                         type="text"
                         v-model="form.product_name"
@@ -153,10 +153,7 @@
                         size="sm"
                         required
                       ></b-form-select>
-                      <b-button
-                        :disabled="isDisabled"
-                        type="submit"
-                        @click="patchProduct()"
+                      <b-button :disabled="isDisabled" @click="patchProduct()"
                         >Update</b-button
                       >
                     </form>
@@ -214,9 +211,7 @@
                           <b-img
                             rounded="top"
                             class="images"
-                            :src="
-                              'http://127.0.0.1:3001/' + item.product_picture
-                            "
+                            :src="urlApi + item.product_picture"
                             alt="Fluid image"
                             fluid
                           />
@@ -420,11 +415,13 @@
 import Header from '../components/_base/Header'
 import Navbar from '../components/_base/Navbar'
 import Aside from '../components/_base/Aside'
+import disabledMixin from '../mixins/disabledMixin'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'Home',
   data() {
     return {
+      urlApi: process.env.VUE_APP_URL + '/',
       // cart: [],
       currentPage: 1,
       // search: '',
@@ -486,14 +483,15 @@ export default {
       cart: 'getCart',
       user: 'setUser'
     }),
-    isDisabled() {
-      return (
-        this.form.product_name <= 0 ||
-        this.form.product_price <= 0 ||
-        this.form.product_status <= 0 ||
-        this.form.category_id <= 0
-      )
-    },
+
+    // isDisabled() {
+    //   return (
+    //     this.form.product_name <= 0 ||
+    //     this.form.product_price <= 0 ||
+    //     this.form.product_status <= 0 ||
+    //     this.form.category_id <= 0
+    //   )
+    // },
     // computedSum() {
     //   const sums = this.cart.map(value => {
     //     return value.purchase_qty * value.product_price
@@ -504,7 +502,7 @@ export default {
       return this.cart.length
     }
   },
-
+  mixins: [disabledMixin],
   methods: {
     ...mapActions([
       'getProducts',

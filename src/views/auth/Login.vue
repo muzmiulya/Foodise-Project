@@ -196,7 +196,6 @@ export default {
         .then(response => {
           this.alert = true
           this.isMsg = response.msg
-          this.addUsers()
         })
         .catch(error => {
           this.alert = true

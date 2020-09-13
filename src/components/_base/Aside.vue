@@ -4,10 +4,7 @@
       <div class="gridbox1">
         <div class="orderboxes" v-for="(item, index) in cart" :key="index">
           <div class="item-a">
-            <img
-              alt="Vue pictures"
-              :src="'http://127.0.0.1:3001/' + item.product_picture"
-            />
+            <img alt="Vue pictures" :src="urlApi + item.product_picture" />
           </div>
           <div class="item-b">
             <p>{{ item.product_name }}</p>
@@ -140,6 +137,7 @@ export default {
   name: 'Aside',
   data() {
     return {
+      urlApi: process.env.VUE_APP_URL + '/',
       histories: []
     }
   },

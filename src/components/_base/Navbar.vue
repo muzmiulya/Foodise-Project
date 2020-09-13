@@ -177,7 +177,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-// import disabledMixin from '../../mixins/disabledMixin'
+import disabledMixin from '../../mixins/disabledMixin'
 export default {
   name: 'Navbar',
   data() {
@@ -207,19 +207,19 @@ export default {
       category: 'getCategory',
       user: 'setUser'
     }),
-    isDisabled() {
-      return (
-        this.form.product_name <= 0 ||
-        this.form.product_price <= 0 ||
-        this.form.product_status <= 0 ||
-        this.form.category_id <= 0
-      )
-    },
+    // isDisabled() {
+    //   return (
+    //     this.form.product_name <= 0 ||
+    //     this.form.product_price <= 0 ||
+    //     this.form.product_status <= 0 ||
+    //     this.form.category_id <= 0
+    //   )
+    // },
     isDisabled2() {
       return this.form2.category_name <= 0 || this.form2.category_status <= 0
     }
   },
-  // mixins: [disabledMixin],
+  mixins: [disabledMixin],
   methods: {
     ...mapActions([
       'addProducts',
