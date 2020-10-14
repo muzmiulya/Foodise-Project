@@ -7,6 +7,8 @@
     <a href="https://github.com/muzmiulya/Foodise-Project/issues">Request Feature</a>
   </p>
 
+![Image Banner](https://user-images.githubusercontent.com/68628908/95963573-0f226c80-0e32-11eb-9812-a027784bdef0.png)
+
 ## About The Project
 
 Foodsie is a point of sale web application build with Vue JS, Foodsie Application is used as a food and drink sales management. Features among others: sales history and payment transaction.
