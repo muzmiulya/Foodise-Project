@@ -44,7 +44,7 @@ export default {
     postOrder(context, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:3001/purchase', payload)
+          .post(`${process.env.VUE_APP_URL}/purchase`, payload)
           .then(response => {
             resolve(response.data)
           })

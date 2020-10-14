@@ -34,9 +34,8 @@ export default {
     login(context, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:3001/users/login', payload)
+          .post(`${process.env.VUE_APP_URL}/users/login`, payload)
           .then(response => {
-            console.log(response.data.data)
             context.commit('setUser', response.data.data)
             localStorage.setItem('token', response.data.data.token)
             resolve(response.data.msg)
@@ -55,28 +54,22 @@ export default {
     addUsers(context, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .post('http://127.0.0.1:3001/users/register', payload)
+          .post(`${process.env.VUE_APP_URL}/users/register`, payload)
           .then(response => {
-            // console.log(response)
             resolve(response.data)
           })
           .catch(error => {
             reject(error.response)
-            // console.log(error)
           })
       })
     },
     getAllUser(context, payload) {
       axios
-        .get('http://127.0.0.1:3001/users/user')
+        .get(`${process.env.VUE_APP_URL}/users/user`)
         .then(response => {
           context.commit('setAllUser', response.data.data)
           const totallRows = response.data.data.length
           context.commit('setTotallRows', totallRows)
-          // this.users = response.data.data
-          // this.totalRows = response.data.data.length
-          // this.getIncomeToday()
-          // console.log(this.todayIncome)
         })
         .catch(error => {
           console.log(error)
@@ -86,11 +79,10 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .patch(
-            `http://127.0.0.1:3001/users/patch/${payload.user_id}`,
+            `${process.env.VUE_APP_URL}/users/patch/${payload.user_id}`,
             payload.form
           )
           .then(response => {
-            console.log(response)
             resolve(response.data)
           })
           .catch(error => {
@@ -101,7 +93,7 @@ export default {
     deleteUser(context, payload) {
       return new Promise((resolve, reject) => {
         axios
-          .delete(`http://127.0.0.1:3001/users/delete/${payload}`)
+          .delete(`${process.env.VUE_APP_URL}/users/delete/${payload}`)
           .then(response => {
             resolve(response.data)
           })
@@ -111,26 +103,22 @@ export default {
       })
     },
     interceptorRequest(context) {
-      console.log('interceptor Works !')
       axios.interceptors.request.use(
-        function(config) {
+        function (config) {
           config.headers.authorization = `Bearer ${context.state.token}`
-          // Do something before request is sent
           return config
         },
-        function(error) {
-          // Do something with request error
+        function (error) {
           return Promise.reject(error)
         }
       )
     },
     interceptorResponse(context) {
       axios.interceptors.response.use(
-        function(response) {
+        function (response) {
           return response
         },
-        function(error) {
-          console.log(error.response)
+        function (error) {
           if (error.response.status === 403) {
             if (
               error.response.data.msg === 'invalid token' ||

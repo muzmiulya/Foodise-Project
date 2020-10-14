@@ -1,5 +1,4 @@
 import axios from 'axios'
-// import { changeUser } from '../../../../../BACKEND/src/config/mysql'
 
 export default {
   state: {
@@ -46,7 +45,7 @@ export default {
   actions: {
     getIncomeToday(context, payload) {
       axios
-        .get('http://127.0.0.1:3001/history/income/today')
+        .get(`${process.env.VUE_APP_URL}/history/income/today`)
         .then(response => {
           context.commit('setIncomeToday', response.data.data)
         })
@@ -56,7 +55,7 @@ export default {
     },
     getOrderCount(context, payload) {
       axios
-        .get('http://127.0.0.1:3001/history/order/count')
+        .get(`${process.env.VUE_APP_URL}/history/order/count`)
         .then(response => {
           context.commit('setOrderCount', response.data.data)
         })
@@ -66,12 +65,9 @@ export default {
     },
     getIncomeYearly(context, payload) {
       axios
-        .get('http://127.0.0.1:3001/history/income/year')
+        .get(`${process.env.VUE_APP_URL}/history/income/year`)
         .then(response => {
           context.commit('setIncomeYearly', response.data.data)
-          // this.yearlyIncome = response.data.data
-          // this.getIncomeYearly()
-          // console.log(this.yearlyIncome)
         })
         .catch(error => {
           console.log(error)
@@ -80,13 +76,10 @@ export default {
     getChartMonthly(context, payload) {
       axios
         .get(
-          `http://127.0.0.1:3001/history/chart/monthly?months=${context.state.month}`
+          `${process.env.VUE_APP_URL}/history/chart/monthly?months=${context.state.month}`
         )
         .then(response => {
-          // this.datas = response.data.data
           context.commit('setChartMonthly', response.data.data)
-          // this.getChartMonthly()
-          // console.log(this.datas)
         })
         .catch(error => {
           console.log(error)
@@ -95,25 +88,12 @@ export default {
     getHistoryPerDay(context, payload) {
       axios
         .get(
-          `http://127.0.0.1:3001/history/days/days?date=${context.state.date}`
+          `${process.env.VUE_APP_URL}/history/days/days?date=${context.state.date}`
         )
         .then(response => {
-          console.log(response.data.data)
-          const datas = response.data.data.map(value => {
-            const setData = {
-              cashier: context.rootState.Auth.user.user_name,
-              ...value
-            }
-            return setData
-          })
-          // const data = response.data.data.push
-          const totalRow = datas.length
-
-          // this.perDay = datas
-          context.commit('setHistoryPerDay', datas)
+          const totalRow = response.data.data.length
+          context.commit('setHistoryPerDay', response.data.data)
           context.commit('setTotalRows', totalRow)
-          // this.totalRows = response.data.data.length
-          // console.log(this.perDay)
         })
         .catch(error => {
           console.log(error)

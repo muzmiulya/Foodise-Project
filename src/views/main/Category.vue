@@ -8,20 +8,72 @@
     />
     <b-col md class="d-flex justify-content-center h-100">
       <b-card class="align-content-center">
-        <div class="buttons">
-          <b-col class="forkSpoon homeSide" xl="12">
+        <b-row class="separate">
+          <b-col class="toHome">
+            <b-button
+              variant="success"
+              v-b-tooltip.hover.top="'Add Category'"
+              class="addC"
+              v-b-modal.modal-add
+            >
+              <img alt="Vue forkSpoon" src="../../assets/plus-sign.png" />
+            </b-button>
+          </b-col>
+          <b-modal
+            id="modal-add"
+            class="modalAdd"
+            title="Add Category"
+            hide-footer
+            no-close-on-backdrop
+            @close="alertClose()"
+          >
+            <b-container>
+              <b-alert variant="success" v-bind:show="alert">{{
+                isMsg
+              }}</b-alert>
+              <b-alert variant="danger" v-bind:show="alertError">{{
+                isMsgError
+              }}</b-alert>
+              <form class="formAdd">
+                <b-form-input
+                  type="text"
+                  v-model="form2.category_name"
+                  placeholder="Category Name"
+                  required
+                ></b-form-input>
+                <br />
+                <b-form-select
+                  v-model="form2.category_status"
+                  id="inputS"
+                  size="sm"
+                  placeholder="Category Status"
+                  required
+                >
+                  <option disabled value selected>Category Status</option>
+                  <option value="1">Active</option>
+                  <option value="0">Non-Active</option>
+                </b-form-select>
+                <br />
+                <b-button :disabled="isDisabled2" @click="addCategory()"
+                  >Add</b-button
+                >
+              </form>
+            </b-container>
+          </b-modal>
+          <b-col class="toHome">
             <router-link to="/" vslot="{ route, navigate}">
-              <b-button v-b-tooltip.hover.top="'Home'" class="forkSpoonButton">
+              <b-button v-b-tooltip.hover.top="'Home'">
                 <img alt="Vue forkSpoon" src="../../assets/3.png" />
               </b-button>
             </router-link>
           </b-col>
-        </div>
+        </b-row>
+
         <b-table
           class="tableOrder"
           striped
           hover
-          :items="users"
+          :items="categories"
           :fields="fields"
           :per-page="perPages"
           :current-page="currentPage"
@@ -30,7 +82,7 @@
             <b-button
               variant="warning"
               size="sm"
-              @click="setUser(row.item, row.index, $event.target)"
+              @click="setCategory(row.item, row.index, $event.target)"
               class="mr-1"
               v-b-modal.modal-update
               ><i class="fas fa-edit"></i
@@ -58,7 +110,7 @@
         <b-modal
           id="modal-update"
           class="modalAdd"
-          title="Update Item"
+          title="Update Category"
           hide-footer
           no-close-on-backdrop
           @close="alertClose()"
@@ -71,41 +123,24 @@
             <form class="formAdd">
               <b-form-input
                 type="text"
-                v-model="form.user_password"
-                placeholder="Password"
-                required
-              ></b-form-input>
-              <br />
-              <b-form-input
-                type="text"
-                v-model="form.user_name"
-                placeholder="User Name"
+                v-model="form.category_name"
+                placeholder="Category Name"
                 required
               ></b-form-input>
               <br />
               <b-form-select
-                v-model="form.user_role"
-                size="sm"
-                placeholder="User Role"
-                required
-              >
-                <option disabled value>Category Role</option>
-                <option value="1">Administrator</option>
-                <option value="2">Cashier</option>
-              </b-form-select>
-              <b-form-select
-                v-model="form.user_status"
+                v-model="form.category_status"
                 id="inputS"
                 size="sm"
-                placeholder="User Status"
+                placeholder="Category Status"
                 required
               >
-                <option disabled value>Category Status</option>
+                <option disabled value selected>Category Status</option>
                 <option value="1">Active</option>
                 <option value="0">Non-Active</option>
               </b-form-select>
               <br />
-              <b-button :disabled="isDisabled" @click="patchUser()"
+              <b-button :disabled="isDisabled" @click="patchCategory()"
                 >Update</b-button
               >
             </form>
@@ -134,7 +169,7 @@
               class="buttonYesDel"
               pill
               variant="danger"
-              @click="delUser(), $bvModal.hide('modal-delete')"
+              @click="delCategory(), $bvModal.hide('modal-delete')"
               >Yes</b-button
             >
           </b-container>
@@ -147,24 +182,25 @@
 <script>
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 export default {
-  name: 'User',
+  name: 'Category',
   data() {
     return {
       currentPage: 1,
       fields: [
-        { key: 'user_id', label: 'Id' },
-        { key: 'user_email', label: 'Email' },
-        { key: 'user_name', label: 'User Name' },
-        { key: 'user_role', label: 'User Role' },
-        { key: 'user_status', label: 'User Status' },
+        { key: 'category_id', label: 'Id' },
+        { key: 'category_name', label: 'Name' },
+        { key: 'category_status', label: 'Status' },
         { key: 'actions', label: 'Actions' }
       ],
       form: {
-        user_name: '',
-        user_password: '',
-        user_role: '',
-        user_status: ''
+        category_name: '',
+        category_status: ''
       },
+      form2: {
+        category_name: '',
+        category_status: ''
+      },
+      category_id: '',
       alert: false,
       isMsg: '',
       alertError: false,
@@ -174,53 +210,68 @@ export default {
     }
   },
   created() {
-    this.getAllUser()
+    this.getCategory()
   },
   computed: {
     ...mapGetters({
-      users: 'getUsers',
-      totallRows: 'getRowses',
-      perPages: 'getPerPages'
+      categories: 'getCategory',
+      totallRows: 'getRoww',
+      perPages: 'getPerP'
     }),
-    isDisabled() {
-      return (
-        this.form.user_name <= 0 ||
-        this.form.user_role <= 0 ||
-        this.form.user_status <= 0
-      )
-    },
     rows() {
       return this.totallRows
+    },
+    isDisabled() {
+      return this.form.category_name <= 0 || this.form.category_status <= 0
+    },
+    isDisabled2() {
+      return this.form2.category_name <= 0 || this.form2.category_status <= 0
     }
   },
   methods: {
-    ...mapActions(['getAllUser', 'updateUser', 'deleteUser']),
+    ...mapActions([
+      'getCategory',
+      'addCategories',
+      'updateCategory',
+      'deleteCategory'
+    ]),
     ...mapMutations(['setPagess']),
     handlePageChange(event) {
       this.setPagess(event)
-      this.getAllUser()
+      this.getCategory()
     },
     alertClose() {
       this.alert = false
     },
-    setUser(data) {
-      this.form = {
-        user_name: data.user_name,
-        user_role: data.user_role,
-        user_status: data.user_status
-      }
-      this.user_id = data.user_id
-    },
-    patchUser() {
-      const setData = {
-        user_id: this.user_id,
-        form: this.form
-      }
-      this.updateUser(setData)
+    addCategory() {
+      this.addCategories(this.form2)
         .then((response) => {
           this.alert = true
           this.isMsg = response.msg
-          this.getAllUser()
+          this.getCategory()
+        })
+        .catch((error) => {
+          this.alertError = true
+          this.isMsgError = error.data.msg
+        })
+    },
+    setCategory(data) {
+      this.form = {
+        category_name: data.category_name,
+        category_status: data.category_status
+      }
+      this.category_id = data.category_id
+    },
+    patchCategory() {
+      const setData = {
+        category_id: this.category_id,
+        form: this.form
+      }
+      this.updateCategory(setData)
+        .then((response) => {
+          this.alert = true
+          this.isMsg = response.msg
+          this.getCategory()
         })
         .catch((error) => {
           this.alertError = true
@@ -228,14 +279,14 @@ export default {
         })
     },
     setDelete(data) {
-      this.user_id = data.user_id
+      this.category_id = data.category_id
     },
-    delUser() {
-      this.deleteUser(this.user_id)
+    delCategory() {
+      this.deleteCategory(this.category_id)
         .then((response) => {
           this.alertDel = true
           this.isMsgDel = response.msg
-          this.getAllUser()
+          this.getCategory()
         })
         .catch((error) => {
           this.alertDel = true
@@ -247,13 +298,16 @@ export default {
 </script>
 
 <style scoped>
+.addC {
+  max-width: 100%;
+  max-height: 100%;
+  align-content: center;
+  background-color: transparent;
+  border: none;
+  height: 60px;
+}
 .buttonLogSign {
   font-weight: bold;
-}
-
-.buttons {
-  display: flex;
-  flex-direction: column;
 }
 .card {
   margin-top: auto;
@@ -265,6 +319,7 @@ export default {
 }
 .card-body {
   background: whitesmoke;
+  overflow: scroll;
 }
 .container-fluid {
   height: 1000px;
@@ -278,9 +333,23 @@ export default {
   text-align: center;
 }
 
-@media screen and (max-width: 700px) {
-  .card-body {
-    overflow-x: scroll;
-  }
+.separate {
+  display: flex;
+  flex-direction: row;
+  align-content: space-between;
+}
+.toHome button {
+  max-width: 100%;
+  max-height: 100%;
+  align-content: center;
+  background-color: transparent;
+  border: none;
+  height: 60px;
+}
+.toHome img {
+  background: transparent;
+  max-width: 100%;
+  width: 35px;
+  height: auto;
 }
 </style>

@@ -20,17 +20,25 @@
             <b-col class="box1">
               <div class="incomeorder">Today's Income</div>
               <div class="numberamount">Rp. {{ todayIncome.incomes }}</div>
-              <div class="percentage">{{todayIncome.incomeYesterday}} Yesterday</div>
+              <div class="percentage">
+                {{ todayIncome.incomeYesterday }} Yesterday
+              </div>
             </b-col>
             <b-col class="box2">
               <div class="incomeorder">Orders</div>
               <div class="numberamount">{{ orderCount.countThisWeek }}</div>
-              <div class="percentage">{{ orderCount.countLastWeek }} Last Week</div>
+              <div class="percentage">
+                {{ orderCount.countLastWeek }} Last Week
+              </div>
             </b-col>
             <b-col class="box3">
               <div class="incomeorder">This Year's Income</div>
-              <div class="numberamount">Rp. {{yearlyIncome.countThisYear}}</div>
-              <div class="percentage">{{yearlyIncome.countLastYear}} Last Year</div>
+              <div class="numberamount">
+                Rp. {{ yearlyIncome.countThisYear }}
+              </div>
+              <div class="percentage">
+                {{ yearlyIncome.countLastYear }} Last Year
+              </div>
             </b-col>
             <b-col class="box4">
               <div class="revenue">Revenue</div>
@@ -97,7 +105,6 @@
 </template>
 
 <script>
-// import axios from 'axios'
 import Navbar from '../components/_base/Navbar'
 import { mapActions, mapMutations, mapGetters } from 'vuex'
 export default {
@@ -115,79 +122,6 @@ export default {
       ],
       items: [],
       months: 'MONTH(NOW())',
-      // datas: [
-      //   {
-      //     name: 'This Month',
-      //     data: {
-      //       1: 0,
-      //       2: 20000,
-      //       3: 11000,
-      //       4: 28000,
-      //       5: 21000,
-      //       6: 39000,
-      //       7: 12000,
-      //       8: 47000,
-      //       9: 40000,
-      //       10: 33000,
-      //       11: 37000,
-      //       12: 24000,
-      //       13: 46000,
-      //       14: 35000,
-      //       15: 39000,
-      //       16: 32000,
-      //       17: 23000,
-      //       18: 39000,
-      //       19: 30000,
-      //       20: 40000,
-      //       21: 32000,
-      //       22: 12000,
-      //       23: 24000,
-      //       24: 46000,
-      //       25: 44000,
-      //       26: 56000,
-      //       27: 31000,
-      //       28: 47000,
-      //       29: 43000,
-      //       30: 39000
-      //     }
-      //   },
-      //   {
-      //     name: 'Last Month',
-      //     data: {
-      //       1: 10000,
-      //       2: 29000,
-      //       3: 3000,
-      //       4: 37000,
-      //       5: 22000,
-      //       6: 38000,
-      //       7: 12000,
-      //       8: 29000,
-      //       9: 22000,
-      //       10: 46000,
-      //       11: 13000,
-      //       12: 18000,
-      //       13: 12000,
-      //       14: 30000,
-      //       15: 21000,
-      //       16: 32000,
-      //       17: 45000,
-      //       18: 43000,
-      //       19: 37000,
-      //       20: 41000,
-      //       21: 29000,
-      //       22: 31000,
-      //       23: 39000,
-      //       24: 28000,
-      //       25: 17000,
-      //       26: 36000,
-      //       27: 17000,
-      //       28: 32000,
-      //       29: 28000,
-      //       30: 21000
-      //     }
-      //   }
-      // ],
-      // datas: {},
       options: [
         { value: 'date', text: 'Today' },
         { value: 'week', text: 'This Week' },
@@ -209,12 +143,6 @@ export default {
         { value: '12', text: 'December' }
       ],
       currentPage: 1
-      // perPage: 5,
-      // totalRows: null,
-      // todayIncome: [],
-      // orderCount: [],
-      // perDay: []
-      // yearlyIncome: []
     }
   },
 
@@ -255,7 +183,6 @@ export default {
     ]),
     ...mapMutations(['setMonth', 'setDate', 'setPages']),
     handlePageChange(event) {
-      // this.currentPage = event
       this.setPages(event)
       this.getHistoryPerDay()
     },
@@ -267,73 +194,6 @@ export default {
       this.setMonth(event)
       this.getChartMonthly()
     }
-    // getHistoryPerDay() {
-    //   axios
-    //     .get(`http://127.0.0.1:3001/history/days/days?date=${this.date}`)
-    //     .then((response) => {
-    //       const datas = response.data.data.map((value) => {
-    //         const setData = {
-    //           cashier: 'Cashier 1',
-    //           ...value
-    //         }
-    //         return setData
-    //       })
-    //       this.perDay = datas
-    //       this.totalRows = response.data.data.length
-    //       // console.log(this.perDay)
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // }
-    // getIncomeToday() {
-    //   axios
-    //     .get('http://127.0.0.1:3001/history/income/today')
-    //     .then((response) => {
-    //       this.todayIncome = response.data.data
-    //       // this.getIncomeToday()
-    //       // console.log(this.todayIncome)
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // },
-    // getOrderCount() {
-    //   axios
-    //     .get('http://127.0.0.1:3001/history/order/count')
-    //     .then((response) => {
-    //       this.orderCount = response.data.data
-    //       // this.getOrderCount()
-    //       // console.log(this.orderCount)
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // },
-    // getIncomeYearly() {
-    //   axios
-    //     .get('http://127.0.0.1:3001/history/income/year')
-    //     .then((response) => {
-    //       this.yearlyIncome = response.data.data
-    //       // this.getIncomeYearly()
-    //       // console.log(this.yearlyIncome)
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // },
-    // getChartMonthly() {
-    //   axios
-    //     .get(`http://127.0.0.1:3001/history/chart/monthly?months=${this.month}`)
-    //     .then((response) => {
-    //       this.datas = response.data.data
-    //       // this.getChartMonthly()
-    //       // console.log(this.datas)
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // }
   }
 }
 </script>

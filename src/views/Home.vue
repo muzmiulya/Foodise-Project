@@ -8,49 +8,6 @@
         crossorigin="anonymous"
       />
       <Header :increments="incrementCount"></Header>
-      <!-- <b-row>
-        <b-col class="firstColumn" xl="8" lg="8" md="8" sm="12" cols="12">
-          <b-row>
-            <b-col class="homeButton" xl lg md sm cols="3">
-              <img alt="Vue home" src="../assets/1.png" />
-            </b-col>
-            <b-col class="foodItems" xl="9" lg="8" md="8" sm="8" cols="6">
-              <div>
-                <h2 v-show="!isSearch">Foodsie</h2>
-                <b-container v-show="isSearch">
-                  <b-row>
-                    <b-col xl="12">
-                      <b-form-input
-                        type="search"
-                        v-model="searching"
-                        v-show="isSearch"
-                        placeholder="Search Product"
-                        @change="handleSearch"
-                        class="searchProduct"
-                      ></b-form-input>
-                    </b-col>
-                  </b-row>
-                </b-container>
-              </div>
-            </b-col>
-            <b-col class="searchButton" xl lg="2" md="2" sm="2" cols="3">
-              <b-button
-                class="buttonSearch"
-                type="reset"
-                @click="isSearch = !isSearch"
-              >
-                <img alt="Vue search" src="../assets/2.png" />
-              </b-button>
-            </b-col>
-          </b-row>
-        </b-col>
-        <b-col class="myCart" xl="4" lg="4" md="4" sm="12">
-          Cart
-          <span class="badge badge-pill badge-primary">{{
-            incrementCount
-          }}</span>
-        </b-col>
-      </b-row>-->
       <b-row>
         <Navbar></Navbar>
         <b-col class="gridbackground" md="7">
@@ -114,7 +71,12 @@
                   @close="alertClose()"
                 >
                   <b-container>
-                    <b-alert v-bind:show="alert">{{ isMsg }}</b-alert>
+                    <b-alert variant="success" v-bind:show="alert">{{
+                      isMsg
+                    }}</b-alert>
+                    <b-alert variant="danger" v-bind:show="alertError">{{
+                      isMsgError
+                    }}</b-alert>
                     <form class="formAdd">
                       <b-form-input
                         type="text"
@@ -137,7 +99,7 @@
                         placeholder="Choose a file..."
                         drop-placeholder="Drop file here..."
                       ></b-form-file>
-                      <br />
+                      <p>(max file size: 1 mb)</p>
                       <b-form-select
                         v-model="form.product_status"
                         size="sm"
@@ -204,9 +166,13 @@
                       tag="article"
                       class="mb-2"
                       no-body
-                      style="background-color:transparent; border: none; position: relative;"
+                      style="
+                        background-color: transparent;
+                        border: none;
+                        position: relative;
+                      "
                     >
-                      <b-card-body style="padding:0;">
+                      <b-card-body style="padding: 0">
                         <div class="productImage">
                           <b-img
                             rounded="top"
@@ -229,49 +195,47 @@
                           style="margin-bottom: 0"
                           >{{ item.product_name }}</b-card-title
                         >
-                        <b-card-text class="cardTitlePrice">
-                          {{ item.product_price }}
-                        </b-card-text>
+                        <b-card-text class="cardTitlePrice">{{
+                          item.product_price
+                        }}</b-card-text>
                         <b-button
-                          pill
                           v-show="isHiding(item)"
                           variant="primary"
                           @click="addToCarts(item), isHiding(item)"
-                          style="width:33%"
+                          style="width: 100%"
                         >
                           <i class="fas fa-cart-plus"></i>
                         </b-button>
                         <b-button
-                          pill
                           v-show="!isHiding(item)"
                           variant="danger"
-                          style="width:33%"
+                          style="width: 100%"
                           @click="deleteEvent(item), !isHiding(item)"
                         >
                           <span aria-hidden="true">&times;</span>
                         </b-button>
-                        <b-button
-                          pill
-                          v-show="isHiding(item)"
-                          v-if="user.user_role === 1"
-                          variant="success"
-                          style="width:33%"
-                          v-b-modal.modal-update
-                          @click="setProduct(item)"
-                        >
-                          <i class="fas fa-edit"></i>
-                        </b-button>
-                        <b-button
-                          pill
-                          v-show="isHiding(item)"
-                          v-if="user.user_role === 1"
-                          variant="danger"
-                          style="width:33%"
-                          v-b-modal.modal-delete
-                          @click="setDelete(item)"
-                        >
-                          <i class="far fa-trash-alt"></i>
-                        </b-button>
+                        <div class="flexs">
+                          <b-button
+                            v-show="isHiding(item)"
+                            v-if="user.user_role === 1"
+                            variant="success"
+                            style="width: 45%"
+                            v-b-modal.modal-update
+                            @click="setProduct(item)"
+                          >
+                            <i class="fas fa-edit"></i>
+                          </b-button>
+                          <b-button
+                            v-show="isHiding(item)"
+                            v-if="user.user_role === 1"
+                            variant="danger"
+                            style="width: 45%"
+                            v-b-modal.modal-delete
+                            @click="setDelete(item)"
+                          >
+                            <i class="far fa-trash-alt"></i>
+                          </b-button>
+                        </div>
                       </b-card-body>
                     </b-card>
                   </b-col>
@@ -295,123 +259,12 @@
           </div>
         </b-col>
         <Aside></Aside>
-        <!-- <b-col class="yourcart" md="4">
-          <div class="theGrid" v-if="cart.length > 0">
-            <div class="gridbox1">
-              <div class="orderboxes" v-for="(item, index) in cart" :key="index">
-                <div class="item-a">
-                  <img alt="Vue pictures" src="../assets/7.jpg" />
-                </div>
-                <div class="item-b">
-                  <p>{{ item.product_name }}</p>
-                </div>
-                <div class="item-c">
-                  <div class="item-cPrice">
-                    <p>{{ item.product_price * item.purchase_qty }}</p>
-                  </div>
-                </div>
-                <div class="item-d">
-                  <b-button
-                    type="button"
-                    :disabled="item.purchase_qty === 1"
-                    @click="decrementQty(item)"
-                  >
-                    <img alt="Vue pictures" src="../assets/minus.png" />
-                  </b-button>
-                </div>
-                <div class="item-e">
-                  <h5>{{ item.purchase_qty }}</h5>
-                </div>
-                <div class="item-f">
-                  <b-button type="button" @click="incrementQty(item)">
-                    <img alt="Vue pictures" src="../assets/plus.png" />
-                  </b-button>
-                </div>
-              </div>
-            </div>
-            <div class="gridbox2">
-              <div class="totalP">
-                <div class="total">Total:</div>
-                <div class="totalnumber">Rp. {{ computedSum }}</div>
-              </div>
-              <div class="ppn">*belum termasuk ppn</div>
-              <div class="checkoutbutton">
-                <b-button
-                  block
-                  type="button"
-                  class="btn-primary"
-                  v-b-modal.modal-checkout
-                  @click="postOrder()"
-                >Checkout</b-button>
-                <b-modal
-                  id="modal-checkout"
-                  class="modalCheck"
-                  title="Checkout"
-                  hide-footer
-                  no-close-on-backdrop
-                  @close="deleteEventAll()"
-                >
-                  <div class="Checkouts">
-                    <div class="firstRow">
-                      <div class="cashier">Cashier: Pevita Pearce</div>
-                      <div class="cashier">Receipt no: #{{ histories.history_invoices }}</div>
-                    </div>
-                    <div class="secondRow">
-                      <div class="loopProduct" v-for="(item, index) in cart" :key="index">
-                        <div class="ordered">{{ item.product_name }} x{{ item.purchase_qty }}</div>
-                        <div class="ordered">Rp. {{ item.product_price * item.purchase_qty }}</div>
-                      </div>
-                    </div>
-                    <div class="secondHalfRow">
-                      <div class="ppns">PPn 10%</div>
-                      <div class="ppnPrice">Rp. {{ computedSum * 0.1 }}</div>
-                    </div>
-                    <div class="thirdRow">
-                      <div class="subTotal">Total: Rp. {{ histories.history_subtotal }}</div>
-                    </div>
-                    <div class="fourthRow">
-                      <div class="payment">Payment: Cash</div>
-                    </div>
-                    <div class="fifthRow">
-                      <b-button
-                        class="buttonPrint"
-                        variant="success"
-                        @click="deleteEventAll()"
-                      >Print</b-button>
-                    </div>
-                    <div class="sixthRow">
-                      <h6>Or</h6>
-                    </div>
-                    <div class="seventhRow">
-                      <b-button
-                        class="buttonSendEmail"
-                        variant="primary"
-                        @click="deleteEventAll()"
-                      >Send Email</b-button>
-                    </div>
-                  </div>
-                </b-modal>
-              </div>
-              <div class="cancelbutton">
-                <b-button type="submit" class="btn-secondary" @click="deleteEventAll()">Cancel</b-button>
-              </div>
-            </div>
-          </div>
-          <div v-else>
-            <b-container class="cartInside">
-              <img alt="Vue cart" src="../assets/6.png" />
-              <h3>Your cart is empty</h3>
-              <p>Please add some items from the menu</p>
-            </b-container>
-          </div>
-        </b-col>-->
       </b-row>
     </b-container>
   </div>
 </template>
 
 <script>
-// import axios from 'axios'
 import Header from '../components/_base/Header'
 import Navbar from '../components/_base/Navbar'
 import Aside from '../components/_base/Aside'
@@ -422,12 +275,8 @@ export default {
   data() {
     return {
       urlApi: process.env.VUE_APP_URL + '/',
-      // cart: [],
       currentPage: 1,
-      // search: '',
-      // limit: 9,
       defaultSort: '',
-      // searching: '',
       disabled: true,
       form: {
         category_id: '',
@@ -436,24 +285,19 @@ export default {
         product_picture: {},
         product_status: ''
       },
-      // checkout: {},
       pages1: [
         { text: '1', value: '1' },
         { text: '2', value: '2' },
         { text: '3', value: '3' }
       ],
       alert: false,
-      alertDel: false,
       isMsg: '',
+      alertError: false,
+      isMsgError: '',
+      alertDel: false,
       isMsgDel: '',
       isUpdate: false,
-      // isSearch: false,
       isCheck: false
-      // totalRows: null,
-      // product_id: '',
-      // products: []
-      // category: [],
-      // histories: []
     }
   },
 
@@ -464,13 +308,8 @@ export default {
   },
   created() {
     this.getProducts()
-    // this.searchProduct()
     this.getCategory()
   },
-  // updated() {
-  //   this.searchProduct()
-  // },
-
   computed: {
     ...mapGetters({
       limit: 'getLimit',
@@ -479,25 +318,10 @@ export default {
       rows: 'getTotalRows',
       search: 'getSearch',
       products: 'getProduct',
-      category: 'getCategory',
+      category: 'getCategoryValue',
       cart: 'getCart',
       user: 'setUser'
     }),
-
-    // isDisabled() {
-    //   return (
-    //     this.form.product_name <= 0 ||
-    //     this.form.product_price <= 0 ||
-    //     this.form.product_status <= 0 ||
-    //     this.form.category_id <= 0
-    //   )
-    // },
-    // computedSum() {
-    //   const sums = this.cart.map(value => {
-    //     return value.purchase_qty * value.product_price
-    //   })
-    //   return sums.reduce((a, b) => a + b)
-    // },
     incrementCount() {
       return this.cart.length
     }
@@ -513,13 +337,13 @@ export default {
     ]),
     ...mapMutations(['setPage', 'setSort', 'setSearch', 'addToCarts']),
     checkCart(data) {
-      return this.cart.some(item => item.product_id === data.product_id)
+      return this.cart.some((item) => item.product_id === data.product_id)
     },
     alertClose() {
       this.alert = false
     },
     isHiding(data) {
-      if (this.cart.some(item => item.product_id === data.product_id)) {
+      if (this.cart.some((item) => item.product_id === data.product_id)) {
         return false
       } else {
         return true
@@ -527,100 +351,24 @@ export default {
     },
     deleteEvent(data) {
       const indexProduct = this.cart.find(
-        value => value.product_id === data.product_id
+        (value) => value.product_id === data.product_id
       )
       const indexId = this.cart.indexOf(indexProduct)
       this.cart.splice(indexId, 1)
     },
-    // deleteEventAll() {
-    //   this.cart.splice(0, this.cart.length)
-    // },
     handleFile(event) {
       this.form.product_picture = event.target.files[0]
-      console.log(event.target.files[0])
     },
     handlePageChange(event) {
       this.$router.push(`?page=${event}`)
-      // console.log(event)
       this.setPage(event)
       this.getProducts()
     },
-    // handleSearch(event) {
-    //   this.$router.push(`?keyword=${event}`)
-    //   this.setSearch(event)
-    //   // this.search = event
-    //   this.searchProduct()
-    // },
     handleSort(event) {
       this.$router.push(`?sort=${event}`)
       this.setSort(event)
-      // this.sort = event
       this.getProducts()
     },
-
-    // incrementQty(data) {
-    //   const incrementData = this.cart.find(
-    //     (value) => value.product_id === data.product_id
-    //   )
-    //   incrementData.purchase_qty += 1
-    // },
-    // decrementQty(data) {
-    //   const decrementData = this.cart.find(
-    //     (value) => value.product_id === data.product_id
-    //   )
-    //   decrementData.purchase_qty -= 1
-    // },
-    // addToCart(data) {
-    //   const setCart = {
-    //     product_id: data.product_id,
-    //     purchase_qty: 1,
-    //     product_name: data.product_name,
-    //     product_price: data.product_price
-    //   }
-    //   this.cart = [...this.cart, setCart]
-    // },
-    // addProduct(event) {
-    //   console.log(event)
-    //   axios
-    //     .post('http://127.0.0.1:3001/product', event)
-    //     .then((response) => {
-    //       this.alert = true
-    //       this.isMsg = response.data.msg
-    //       this.get_product()
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // },
-    // get_product() {
-    //   axios
-    //     .get(
-    //       `http://127.0.0.1:3001/product?sort=${this.sort}&page=${this.page}&limit=${this.limit}`
-    //     )
-    //     .then((response) => {
-    //       this.products = response.data.data
-    //       this.totalRows = response.data.pagination.totalData
-    //       // console.log(this.totalRows)
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // },
-    // searchProduct(event) {
-    //   axios
-    //     .get(
-    //       `http://127.0.0.1:3001/product/search/name?search=${this.search}&limit=${this.limit}`
-    //     )
-    //     .then(response => {
-    //       // this.products = response.data.data
-    //       this.totalRows2 = response.data.data.length
-    //       console.log(response)
-    //       // console.log(this.products)
-    //     })
-    //     .catch(error => {
-    //       console.log(error)
-    //     })
-    // },
     setProduct(data) {
       this.form = {
         product_name: data.product_name,
@@ -641,21 +389,6 @@ export default {
       }
       this.product_id = data.product_id
     },
-    // patchProduct() {
-    //   console.log(this.product_id)
-    //   console.log(this.form)
-    //   this.isUpdate = false
-    //   axios
-    //     .patch(`http://127.0.0.1:3001/product/${this.product_id}`, this.form)
-    //     .then((response) => {
-    //       this.get_product()
-    //       this.alert = true
-    //       this.isMsg = response.data.msg
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // },
     patchProduct() {
       const data = new FormData()
       data.append('product_name', this.form.product_name)
@@ -667,32 +400,20 @@ export default {
         product_id: this.product_id,
         form: data
       }
-      // console.log(setData)
       this.isUpdate = false
       this.updateProducts(setData)
-        .then(response => {
+        .then((response) => {
           this.alert = true
           this.isMsg = response.msg
+          this.alertError = false
           this.getProducts()
         })
-        .catch(error => {
-          this.alert = true
-          this.isMsg = error.data.msg
+        .catch((error) => {
+          this.alertError = true
+          this.isMsgError = error.data.msg
+          this.alert = false
         })
     },
-    // deleteProduct() {
-    //   console.log(this.product_id)
-    //   axios
-    //     .delete(`http://127.0.0.1:3001/product/${this.product_id}`, this.form)
-    //     .then((response) => {
-    //       this.getProducts()
-    //       this.alert = true
-    //       // this.isMsg = response.data.msg
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // },
     deleteProduct() {
       const data = new FormData()
       data.append('product_name', this.form.product_name)
@@ -706,62 +427,16 @@ export default {
       }
       this.isUpdate = false
       this.deleteProducts(setData)
-        .then(response => {
+        .then((response) => {
           this.alertDel = true
           this.isMsgDel = response.msg
           this.getProducts()
         })
-        .catch(error => {
+        .catch((error) => {
           this.alertDel = true
           this.isMsgDel = error.data.msg
         })
     }
-    // postOrder() {
-    //   this.checkout = { orders: this.cart }
-    //   axios
-    //     .post('http://127.0.0.1:3001/purchase', this.checkout)
-    //     .then((response) => {
-    //       this.histories = response.data.data
-    //       this.alert = true
-    //       this.isMsg = response.data.msg
-    //       console.log(this.histories)
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // }
-    // getCategory() {
-    //   axios
-    //     .get('http://127.0.0.1:3001/category')
-    //     .then((response) => {
-    //       const datas = response.data.data.map((value) => {
-    //         const setData = {
-    //           value: value.category_id,
-    //           text: value.category_name
-    //         }
-    //         return setData
-    //       })
-    //       this.category = [{ value: '', text: 'Category' }, ...datas]
-    //       // console.log(this.category)
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // }
-    // addCategory(event) {
-    //   console.log(event)
-    //   axios
-    //     .post('http://127.0.0.1:3001/category', event)
-    //     .then((response) => {
-    //       this.alert = true
-    //       this.isMsg = response.data.msg
-    //       this.getCategory()
-    //       // console.log(this.isMsg)
-    //     })
-    //     .catch((error) => {
-    //       console.log(error)
-    //     })
-    // }
   }
 }
 </script>

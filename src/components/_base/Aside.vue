@@ -58,7 +58,9 @@
           >
             <div class="Checkouts">
               <div class="firstRow">
-                <div class="cashier">Cashier: Pevita Pearce</div>
+                <div class="cashier">
+                  Cashier: {{ histories.history_user_name }}
+                </div>
                 <div class="cashier">
                   Receipt no: #{{ histories.history_invoices }}
                 </div>
@@ -93,19 +95,8 @@
                 <b-button
                   class="buttonPrint"
                   variant="success"
-                  @click="deleteEventAll()"
+                  @click="printPdf()"
                   >Print</b-button
-                >
-              </div>
-              <div class="sixthRow">
-                <h6>Or</h6>
-              </div>
-              <div class="seventhRow">
-                <b-button
-                  class="buttonSendEmail"
-                  variant="primary"
-                  @click="deleteEventAll()"
-                  >Send Email</b-button
                 >
               </div>
             </div>
@@ -125,14 +116,16 @@
       <b-container class="cartInside">
         <img alt="Vue cart" src="../../assets/6.png" />
         <h3 v-orange>Your cart is empty</h3>
-        <p>Please add some items from the menu</p>
+        <p ref="checkout">Please add some items from the menu</p>
       </b-container>
     </div>
   </b-col>
 </template>
 
 <script>
+/* eslint-disable new-cap */
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { jsPDF } from 'jspdf'
 export default {
   name: 'Aside',
   data() {
@@ -144,7 +137,8 @@ export default {
   computed: {
     ...mapGetters({
       cart: 'getCart',
-      totals: 'computedSum'
+      totals: 'computedSum',
+      user: 'setUser'
     })
   },
   methods: {
@@ -154,30 +148,39 @@ export default {
       this.cart.splice(0, this.cart.length)
     },
     orderPost() {
-      const data = { orders: this.cart }
+      const data = { cashier: this.user.user_name, orders: this.cart }
       this.postOrder(data)
-        .then(response => {
+        .then((response) => {
           this.histories = response.data
-          // console.log(response)
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error)
         })
+    },
+    printPdf() {
+      const carts = this.cart
+      const history = this.histories
+      const total = this.totals
+      const doc = new jsPDF()
+      doc.text('- Foodsie -', 10, 10)
+      doc.text(`Cashier: ${history.history_user_name}`, 20, 20)
+      doc.text(`Receipt no: #${history.history_invoices}`, 20, 30)
+      doc.text('Items: ', 20, 40)
+      let y = 40
+      for (let i = 0; i < carts.length; i++) {
+        doc.text(
+          `${carts[i].product_name} \t Rp.${carts[i].product_price} x${carts[i].purchase_qty} \n`,
+          40,
+          y
+        )
+        y = y + 10
+      }
+      const date = new Date()
+      doc.text(`PPn: Rp.${total * 0.1}`, 20, y + 10)
+      doc.text(`Total: Rp.${total}`, 20, y + 20)
+      doc.text(`Date: ${date}`, 20, y + 30)
+      doc.save('receipt.pdf')
     }
-    // postOrder() {
-    //   const order = { orders: this.cart }
-    //   axios
-    //     .post('http://127.0.0.1:3001/purchase', order)
-    //     .then(response => {
-    //       this.histories = response.data.data
-    //       // this.alert = true
-    //       // this.isMsg = response.data.msg
-    //       console.log(this.histories)
-    //     })
-    //     .catch(error => {
-    //       console.log(error)
-    //     })
-    // }
   }
 }
 </script>

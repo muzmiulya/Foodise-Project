@@ -8,7 +8,10 @@
     />
     <div class="d-flex justify-content-center h-100">
       <b-card class="align-content-center" v-show="!isShown">
-        <b-alert v-bind:show="alert">{{ isMsg }}</b-alert>
+        <b-alert variant="success" v-bind:show="alerts">{{ isMsg }}</b-alert>
+        <b-alert variant="danger" v-bind:show="alertError">{{
+          isMsgError
+        }}</b-alert>
         <h3>Please Login</h3>
         <br />
         <form @submit.prevent="onSubmit" @reset.prevent="onReset">
@@ -40,7 +43,11 @@
             ></b-form-input>
           </b-input-group>
           <br />
-          <b-button class="btn-block" variant="primary" @click="onSubmit()"
+          <b-button
+            :disabled="isDisabled2"
+            class="btn-block"
+            variant="primary"
+            @click="onSubmit()"
             >Log in</b-button
           >
           <br />
@@ -52,15 +59,18 @@
           class="buttonLogSign btn-block"
           variant="light"
           type="button"
-          @click="isShown = !isShown"
+          @click=";(isShown = !isShown), onReset()"
           >Sign up</b-button
         >
       </b-card>
       <b-card class="align-content-center" v-show="isShown">
-        <b-alert v-bind:show="alert">{{ isMsg }}</b-alert>
+        <b-alert variant="success" v-bind:show="alerts">{{ isMsg }}</b-alert>
+        <b-alert variant="danger" v-bind:show="alertError">{{
+          isMsgError
+        }}</b-alert>
         <h3>Sign up</h3>
         <br />
-        <form>
+        <form @submit.prevent="addUser" @reset.prevent="onResetSignUp">
           <b-input-group>
             <div class="input-group-prepend">
               <span class="input-group-text">
@@ -126,9 +136,6 @@
         >
       </b-card>
     </div>
-    <!-- [1] [2] -->
-    <!-- <h3>{{ dataName }}</h3> -->
-    <!-- [3] -->
   </b-container>
 </template>
 
@@ -148,8 +155,10 @@ export default {
         user_name: ''
       },
       isShown: false,
-      alert: false,
-      isMsg: ''
+      alerts: false,
+      isMsg: '',
+      alertError: false,
+      isMsgError: ''
     }
   },
   computed: {
@@ -159,21 +168,25 @@ export default {
         this.formSignUp.user_password <= 0 ||
         this.formSignUp.user_name <= 0
       )
+    },
+    isDisabled2() {
+      return this.form.user_email <= 0 || this.form.user_password <= 0
     }
   },
   methods: {
     ...mapActions(['login', 'addUsers']),
     onSubmit() {
       this.login(this.form)
-        .then(result => {
-          console.log(result)
+        .then((result) => {
+          this.alerts = true
+          this.isMsg = result
+          this.alertError = false
           this.$router.push('/')
         })
-        .catch(error => {
-          // this.alert = true
-          // this.isMsg = error.data.msg
-          alert(error)
-          // console.log(error)
+        .catch((error) => {
+          this.alertError = true
+          this.isMsgError = error
+          this.alerts = false
         })
     },
     onReset() {
@@ -181,7 +194,8 @@ export default {
         user_email: '',
         user_password: ''
       }
-      this.alert = false
+      this.alerts = false
+      this.alertError = false
     },
     onResetSignUp() {
       this.formSignUp = {
@@ -189,17 +203,20 @@ export default {
         user_password: '',
         user_name: ''
       }
-      this.alert = false
+      this.alerts = false
+      this.alertError = false
     },
     addUser() {
       this.addUsers(this.formSignUp)
-        .then(response => {
-          this.alert = true
+        .then((response) => {
+          this.alerts = true
           this.isMsg = response.msg
+          this.alertError = false
         })
-        .catch(error => {
-          this.alert = true
-          this.isMsg = error.data.msg
+        .catch((error) => {
+          this.alertError = true
+          this.isMsgError = error.data.msg
+          this.alerts = false
         })
     }
   }

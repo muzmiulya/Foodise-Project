@@ -44,21 +44,12 @@
             hide-footer
             no-close-on-backdrop
           >
-            <b-alert v-bind:show="alerts">{{ isMsg }}</b-alert>
-            <b-button
-              class="buttonChange"
-              variant="success"
-              v-show="!isShown"
-              @click="isShown = !isShown"
-              >Category</b-button
-            >
-            <b-button
-              class="buttonChange"
-              variant="success"
-              v-show="isShown"
-              @click="isShown = !isShown"
-              >Product</b-button
-            >
+            <b-alert variant="success" v-bind:show="alerts">{{
+              isMsg
+            }}</b-alert>
+            <b-alert variant="danger" v-bind:show="alertError">{{
+              isMsgError
+            }}</b-alert>
             <br />
             <b-container class="addModalContainer">
               <form
@@ -82,7 +73,6 @@
                   required
                 ></b-form-input>
                 <br />
-
                 <b-form-file
                   id="inputPi"
                   type="file"
@@ -91,7 +81,7 @@
                   drop-placeholder="Drop file here..."
                   required
                 ></b-form-file>
-                <br />
+                <p>(max file size: 1 mb)</p>
                 <b-form-select
                   v-model="form.product_status"
                   id="inputS"
@@ -115,51 +105,25 @@
                   >Add</b-button
                 >
               </form>
-              <form
-                v-show="isShown"
-                class="formAdd"
-                v-on:submit.prevent="addProduct"
-              >
-                <b-form-input
-                  id="inputCN"
-                  type="text"
-                  v-model="form2.category_name"
-                  placeholder="Category Name"
-                  required
-                ></b-form-input>
-                <br />
-                <b-form-select
-                  v-model="form2.category_status"
-                  id="inputCS"
-                  size="sm"
-                  placeholder="Category Status"
-                  required
-                >
-                  <option disabled value selected>Category Status</option>
-                  <option value="1">Active</option>
-                  <option value="0">Non-Active</option>
-                </b-form-select>
-                <br />
-                <b-button :disabled="isDisabled2" @click="addCategory()"
-                  >Add</b-button
-                >
-              </form>
             </b-container>
           </b-modal>
         </div>
       </b-col>
     </b-row>
     <b-row>
-      <b-col class="history homeSide" xl="12">
-        <b-button
-          v-b-tooltip.hover.top="'Logout'"
-          class="logout"
-          @click="handleLogout"
-        >
-          <img alt="Vue history" src="../../assets/signout.png" />
-        </b-button>
+      <b-col class="add homeSide" xl="12">
+        <router-link to="/category" vslot="{ route, navigate}">
+          <b-button
+            v-if="user.user_role === 1"
+            v-b-tooltip.hover.top="'Category'"
+            class="historyButton"
+          >
+            <img alt="Vue history" src="../../assets/list.png" />
+          </b-button>
+        </router-link>
       </b-col>
     </b-row>
+
     <b-row>
       <b-col class="history homeSide" xl="12">
         <router-link to="/user" vslot="{ route, navigate}">
@@ -167,7 +131,7 @@
             v-if="user.user_role === 1"
             v-b-tooltip.hover.top="'User Controller'"
           >
-            <img alt="Vue history" src="../../assets/users.png" />
+            <img alt="Vue history" src="../../assets/settings.png" />
           </b-button>
         </router-link>
       </b-col>
@@ -189,12 +153,10 @@ export default {
         product_picture: {},
         product_status: ''
       },
-      form2: {
-        category_name: '',
-        category_status: ''
-      },
       alerts: false,
       isMsg: '',
+      alertError: false,
+      isMsgError: '',
       isShown: false,
       products: []
     }
@@ -204,34 +166,13 @@ export default {
   },
   computed: {
     ...mapGetters({
-      category: 'getCategory',
+      category: 'getCategoryValue',
       user: 'setUser'
-    }),
-    // isDisabled() {
-    //   return (
-    //     this.form.product_name <= 0 ||
-    //     this.form.product_price <= 0 ||
-    //     this.form.product_status <= 0 ||
-    //     this.form.category_id <= 0
-    //   )
-    // },
-    isDisabled2() {
-      return this.form2.category_name <= 0 || this.form2.category_status <= 0
-    }
+    })
   },
   mixins: [disabledMixin],
   methods: {
-    ...mapActions([
-      'addProducts',
-      'addCategories',
-      'getProducts',
-      'getCategory'
-    ]),
-    ...mapActions({ handleLogout: 'logout' }),
-
-    // handleLogout() {
-    //   console.log('logout clicked')
-    // },
+    ...mapActions(['addProducts', 'getProducts', 'getCategory']),
     postProduct() {
       const data = new FormData()
       data.append('product_name', this.form.product_name)
@@ -239,33 +180,21 @@ export default {
       data.append('product_price', this.form.product_price)
       data.append('product_status', this.form.product_status)
       data.append('product_picture', this.form.product_picture)
-      console.log(data)
       this.addProducts(data)
-        .then(response => {
+        .then((response) => {
           this.alerts = true
           this.isMsg = response.msg
+          this.alertError = false
           this.getProducts()
         })
-        .catch(error => {
-          this.alerts = true
-          this.isMsg = error.data.msg
-        })
-    },
-    addCategory() {
-      this.addCategories(this.form2)
-        .then(response => {
-          this.alerts = true
-          this.isMsg = response.msg
-          this.getCategory()
-        })
-        .catch(error => {
-          this.alerts = true
-          this.isMsg = error.data.msg
+        .catch((error) => {
+          this.alertError = true
+          this.isMsgError = error.data.msg
+          this.alerts = false
         })
     },
     handleFile(event) {
       this.form.product_picture = event.target.files[0]
-      console.log(event.target.files[0])
     },
     closeAlert() {
       this.form = {
@@ -280,6 +209,7 @@ export default {
         category_status: ''
       }
       this.alerts = false
+      this.alertError = false
     }
   }
 }
