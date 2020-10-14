@@ -212,6 +212,11 @@ export default {
           this.alerts = true
           this.isMsg = response.msg
           this.alertError = false
+          this.formSignUp = {
+            user_email: '',
+            user_password: '',
+            user_name: ''
+          }
         })
         .catch((error) => {
           this.alertError = true
