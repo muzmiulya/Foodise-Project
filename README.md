@@ -32,7 +32,7 @@ Foodsie is a point of sale web application build with Vue JS, Foodsie Applicatio
 4. Add .env file at root folder project
 
 ```sh
-VUE_APP_URL = https://backend-vacatech.fwdev.online
+VUE_APP_URL = https://backend-foodsie.fwdev.online
 ```
 
 5. Type `npm run serve`
